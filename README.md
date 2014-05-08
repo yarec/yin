@@ -1,11 +1,16 @@
 # The Yin Programming Language
 
-### Discussion Forum
 
-For now let's use this Google Group:
+### Applications for joinging the discussion forum
+
+For now let's use this Google Group, but please read the requirements below
+before you ask to join.
 
 <https://groups.google.com/forum/#!forum/yin-lang>
 
+As I hope to have rational, friendly, non-religious, non-violent discussions
+(unlike many other tech communities), please send me a self introduction about
+your background and motivation to be included into this group.
 
 
 ### License (GNU AGPLv3)
