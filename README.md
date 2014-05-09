@@ -1,7 +1,7 @@
 # The Yin Programming Language
 
 
-### Applications for joinging the discussion forum
+### Applications for joining the discussion forum
 
 For now let's use this Google Group, but please read the requirements below
 before you ask to join.
