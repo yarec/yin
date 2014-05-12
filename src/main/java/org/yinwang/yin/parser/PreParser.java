@@ -101,33 +101,44 @@ public class PreParser {
     }
 
 
-    public void skipSpaces() {
+    public boolean skipSpaces() {
+        boolean found = false;
+
         while (offset < text.length() &&
                 Character.isWhitespace(text.charAt(offset)))
         {
+            found = true;
             forward();
         }
+
+        return found;
     }
 
 
-    public void skipSpaceAndComments() {
-        boolean seenComment = true;
-        while (seenComment) {
-            seenComment = false;
-            skipSpaces();
+    public boolean skipComments() {
+        boolean found = false;
 
-            // comments
-            if (offset + Constants.LINE_COMMENT.length() <= text.length() &&
-                    text.substring(offset, offset + Constants.LINE_COMMENT.length()).equals(Constants.LINE_COMMENT))
-            {
-                while (offset < text.length() && text.charAt(offset) != '\n') {
-                    forward();
-                }
-                if (offset < text.length()) {
-                    forward();
-                }
-                seenComment = true;
+        if (offset + Constants.LINE_COMMENT.length() <= text.length() &&
+                text.substring(offset, offset + Constants.LINE_COMMENT.length()).equals(Constants.LINE_COMMENT))
+        {
+            found = true;
+
+            while (offset < text.length() && text.charAt(offset) != '\n') {
+                forward();
             }
+
+            if (offset < text.length()) {
+                forward();
+            }
+        }
+
+        return found;
+    }
+
+
+    public void skipSpacesAndComments() {
+        while (skipSpaces() || skipComments()) {
+            // do nothing
         }
     }
 
@@ -140,7 +151,7 @@ public class PreParser {
     @Nullable
     private Node nextToken() {
 
-        skipSpaceAndComments();
+        skipSpacesAndComments();
 
         // end of file
         if (offset >= text.length()) {
