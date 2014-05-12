@@ -40,10 +40,6 @@ public class Parser {
             Tuple tuple = ((Tuple) prenode);
             List<Node> elements = tuple.elements;
 
-            if (elements.isEmpty()) {
-                _.abort(tuple, "syntax error");
-            }
-
             if (delimType(tuple.open, Constants.RECORD_BEGIN)) {
                 return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
                         tuple.col);
@@ -52,6 +48,11 @@ public class Parser {
             if (delimType(tuple.open, Constants.ARRAY_BEGIN)) {
                 return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
                         tuple.col);
+            }
+
+            // (...) form must be non-empty
+            if (elements.isEmpty()) {
+                _.abort(tuple, "syntax error");
             }
 
             Node keyNode = elements.get(0);
