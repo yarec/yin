@@ -111,7 +111,7 @@ public class Declare extends Node {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.TUPLE_BEGIN);
+        sb.append(Constants.Paren_BEGIN);
         sb.append(Constants.DECLARE_KEYWORD).append(" ");
 
         for (String field : propertyForm.keySet()) {
@@ -121,7 +121,7 @@ public class Declare extends Node {
             }
         }
 
-        sb.append(Constants.TUPLE_END);
+        sb.append(Constants.PAREN_END);
         return sb.toString();
     }
 }

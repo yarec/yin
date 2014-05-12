@@ -40,9 +40,9 @@ public class PreParser {
             _.abort("failed to read file: " + file);
         }
 
-        addDelimiterPair(Constants.TUPLE_BEGIN, Constants.TUPLE_END);
-        addDelimiterPair(Constants.RECORD_BEGIN, Constants.RECORD_END);
-        addDelimiterPair(Constants.ARRAY_BEGIN, Constants.ARRAY_END);
+        addDelimiterPair(Constants.Paren_BEGIN, Constants.PAREN_END);
+        addDelimiterPair(Constants.Curly_BEGIN, Constants.CURLY_END);
+        addDelimiterPair(Constants.SQUARE_BEGIN, Constants.ARRAY_END);
 
         addDelimiter(Constants.ATTRIBUTE_ACCESS);
     }
@@ -298,7 +298,7 @@ public class PreParser {
             elements.add(s);
             s = nextSexp();
         }
-        return new Tuple(elements, genName(Constants.TUPLE_BEGIN), genName(Constants.TUPLE_END),
+        return new Tuple(elements, genName(Constants.Paren_BEGIN), genName(Constants.PAREN_END),
                 file, 0, text.length(), 0, 0);
     }
 

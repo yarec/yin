@@ -3,15 +3,16 @@ package org.yinwang.yin;
 
 public class Constants {
 
+    // delimiters and delimeter pairs
     public static final String LINE_COMMENT = "--";
 
-    public static final String TUPLE_BEGIN = "(";
-    public static final String TUPLE_END = ")";
+    public static final String Paren_BEGIN = "(";
+    public static final String PAREN_END = ")";
 
-    public static final String RECORD_BEGIN = "{";
-    public static final String RECORD_END = "}";
+    public static final String Curly_BEGIN = "{";
+    public static final String CURLY_END = "}";
 
-    public static final String ARRAY_BEGIN = "[";
+    public static final String SQUARE_BEGIN = "[";
     public static final String ARRAY_END = "]";
 
     public static final String ATTRIBUTE_ACCESS = ".";

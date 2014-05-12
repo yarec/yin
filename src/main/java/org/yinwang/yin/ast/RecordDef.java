@@ -78,7 +78,7 @@ public class RecordDef extends Node {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.TUPLE_BEGIN);
+        sb.append(Constants.Paren_BEGIN);
         sb.append(Constants.RECORD_KEYWORD).append(" ");
         sb.append(name);
 
@@ -93,7 +93,7 @@ public class RecordDef extends Node {
             }
         }
 
-        sb.append(Constants.TUPLE_END);
+        sb.append(Constants.PAREN_END);
         return sb.toString();
     }
 }

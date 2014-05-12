@@ -40,12 +40,12 @@ public class Parser {
             Tuple tuple = ((Tuple) prenode);
             List<Node> elements = tuple.elements;
 
-            if (delimType(tuple.open, Constants.RECORD_BEGIN)) {
+            if (delimType(tuple.open, Constants.Curly_BEGIN)) {
                 return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
                         tuple.col);
             }
 
-            if (delimType(tuple.open, Constants.ARRAY_BEGIN)) {
+            if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
                 return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
                         tuple.col);
             }
@@ -194,7 +194,7 @@ public class Parser {
 
                     // check if there are parents (record A (B C) ...)
                     if (maybeParents instanceof Tuple &&
-                            delimType(((Tuple) maybeParents).open, Constants.TUPLE_BEGIN))
+                            delimType(((Tuple) maybeParents).open, Constants.Paren_BEGIN))
                     {
                         List<Node> parentNodes = ((Tuple) maybeParents).elements;
                         parents = new ArrayList<>();
@@ -262,7 +262,7 @@ public class Parser {
         Scope properties = new Scope();
         for (Node field : fields) {
             if (field instanceof Tuple &&
-                    delimType(((Tuple) field).open, Constants.ARRAY_BEGIN))
+                    delimType(((Tuple) field).open, Constants.SQUARE_BEGIN))
             {
                 List<Node> elements = parseList(((Tuple) field).elements);
                 if (elements.size() < 2) {

@@ -27,7 +27,7 @@ public class Vector extends Value {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.ARRAY_BEGIN);
+        sb.append(Constants.SQUARE_BEGIN);
 
         boolean first = true;
         for (Value v : values) {
