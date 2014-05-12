@@ -101,14 +101,7 @@ public class PreParser {
     }
 
 
-    /**
-     * Lexer
-     *
-     * @return a token or null if file ends
-     */
-    @Nullable
-    private Node nextToken() {
-
+    public void skipSpaceAndComments() {
         boolean seenComment = true;
         while (seenComment) {
             seenComment = false;
@@ -132,6 +125,18 @@ public class PreParser {
                 seenComment = true;
             }
         }
+    }
+
+
+    /**
+     * Lexer
+     *
+     * @return a token or null if file ends
+     */
+    @Nullable
+    private Node nextToken() {
+
+        skipSpaceAndComments();
 
         // end of file
         if (offset >= text.length()) {
@@ -299,6 +304,6 @@ public class PreParser {
 
     public static void main(String[] args) {
         PreParser p = new PreParser(args[0]);
-        _.msg("parsing result: " + p.parse());
+        _.msg("preparser result: " + p.parse());
     }
 }
