@@ -110,7 +110,6 @@ public class PreParser {
             found = true;
             forward();
         }
-
         return found;
     }
 
@@ -118,20 +117,17 @@ public class PreParser {
     public boolean skipComments() {
         boolean found = false;
 
-        if (offset + Constants.LINE_COMMENT.length() <= text.length() &&
-                text.substring(offset, offset + Constants.LINE_COMMENT.length()).equals(Constants.LINE_COMMENT))
-        {
+        if (text.startsWith(Constants.LINE_COMMENT, offset)) {
             found = true;
 
+            // skip to line end
             while (offset < text.length() && text.charAt(offset) != '\n') {
                 forward();
             }
-
             if (offset < text.length()) {
                 forward();
             }
         }
-
         return found;
     }
 
