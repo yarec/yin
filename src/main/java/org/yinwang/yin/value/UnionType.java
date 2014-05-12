@@ -64,7 +64,7 @@ public class UnionType extends Value {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.Paren_BEGIN).append("U ");
+        sb.append(Constants.PAREN_BEGIN).append("U ");
 
         boolean first = true;
         for (Value v : values) {

@@ -78,7 +78,7 @@ public class RecordDef extends Node {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.Paren_BEGIN);
+        sb.append(Constants.PAREN_BEGIN);
         sb.append(Constants.RECORD_KEYWORD).append(" ");
         sb.append(name);
 

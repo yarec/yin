@@ -40,8 +40,8 @@ public class PreParser {
             _.abort("failed to read file: " + file);
         }
 
-        addDelimiterPair(Constants.Paren_BEGIN, Constants.PAREN_END);
-        addDelimiterPair(Constants.Curly_BEGIN, Constants.CURLY_END);
+        addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
+        addDelimiterPair(Constants.CURLY_BEGIN, Constants.CURLY_END);
         addDelimiterPair(Constants.SQUARE_BEGIN, Constants.ARRAY_END);
 
         addDelimiter(Constants.ATTRIBUTE_ACCESS);
@@ -298,7 +298,7 @@ public class PreParser {
             elements.add(s);
             s = nextSexp();
         }
-        return new Tuple(elements, genName(Constants.Paren_BEGIN), genName(Constants.PAREN_END),
+        return new Tuple(elements, genName(Constants.PAREN_BEGIN), genName(Constants.PAREN_END),
                 file, 0, text.length(), 0, 0);
     }
 
@@ -310,6 +310,6 @@ public class PreParser {
 
     public static void main(String[] args) {
         PreParser p = new PreParser(args[0]);
-        _.msg("tree: " + p.parse());
+        _.msg("S-expression: " + p.parse());
     }
 }

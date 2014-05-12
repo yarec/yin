@@ -40,7 +40,7 @@ public class Parser {
             Tuple tuple = ((Tuple) prenode);
             List<Node> elements = tuple.elements;
 
-            if (delimType(tuple.open, Constants.Curly_BEGIN)) {
+            if (delimType(tuple.open, Constants.CURLY_BEGIN)) {
                 return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
                         tuple.col);
             }
@@ -194,7 +194,7 @@ public class Parser {
 
                     // check if there are parents (record A (B C) ...)
                     if (maybeParents instanceof Tuple &&
-                            delimType(((Tuple) maybeParents).open, Constants.Paren_BEGIN))
+                            delimType(((Tuple) maybeParents).open, Constants.PAREN_BEGIN))
                     {
                         List<Node> parentNodes = ((Tuple) maybeParents).elements;
                         parents = new ArrayList<>();

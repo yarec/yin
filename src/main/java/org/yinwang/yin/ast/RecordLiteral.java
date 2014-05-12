@@ -60,7 +60,7 @@ public class RecordLiteral extends Node {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.Curly_BEGIN);
+        sb.append(Constants.CURLY_BEGIN);
         boolean first = true;
         for (Map.Entry<String, Node> e : map.entrySet()) {
             if (!first) {
