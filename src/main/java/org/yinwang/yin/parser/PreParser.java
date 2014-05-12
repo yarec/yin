@@ -248,11 +248,19 @@ public class PreParser {
 
 
     /**
-     * Parser
+     * Get next node from token stream
+     */
+    public Node nextNode() {
+        return nextNode1(0);
+    }
+
+
+    /**
+     * Helper for nextNode, which does the real work
      *
      * @return a Node or null if file ends
      */
-    public Node nextNode(int depth) {
+    public Node nextNode1(int depth) {
         Node begin = nextToken();
 
         // end of file
@@ -265,7 +273,7 @@ public class PreParser {
             return null;
         } else if (isOpen(begin)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
-            Node iter = nextNode(depth + 1);
+            Node iter = nextNode1(depth + 1);
 
             while (!matchDelim(begin, iter)) {
                 if (iter == null) {
@@ -276,7 +284,7 @@ public class PreParser {
                     return null;
                 } else {
                     elements.add(iter);
-                    iter = nextNode(depth + 1);
+                    iter = nextNode1(depth + 1);
                 }
             }
             return new Tuple(elements, begin, iter, begin.file, begin.start, iter.end, begin.line, begin.col);
@@ -286,22 +294,19 @@ public class PreParser {
     }
 
 
-    // wrapper for the actual parser
-    public Node nextSexp() {
-        return nextNode(0);
-    }
-
-
-    // parse file into a Node
+    /**
+     * Parse file into a Node
+     *
+     * @return a Tuple containing the file's parse tree
+     */
     public Node parse() {
         List<Node> elements = new ArrayList<>();
-        // synthetic block keyword
-        elements.add(Name.genName(Constants.SEQ_KEYWORD));
+        elements.add(Name.genName(Constants.SEQ_KEYWORD));      // synthetic block keyword
 
-        Node s = nextSexp();
+        Node s = nextNode();
         while (s != null) {
             elements.add(s);
-            s = nextSexp();
+            s = nextNode();
         }
 
         return new Tuple(
