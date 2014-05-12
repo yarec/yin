@@ -73,6 +73,8 @@ public class Parser {
                         Node alter = parseNode(elements.get(3));
                         return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
+                    } else {
+                        _.abort(tuple, "incorrect format of if");
                     }
                 }
 
