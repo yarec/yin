@@ -232,20 +232,11 @@ public class PreParser {
 
 
     /**
-     * Find one complete node from the token stream
-     * Does most of the work for the parser
+     * Parser
      *
      * @return a Node or null if file ends
      */
-    public Node nextNode() {
-        return nextNode1(0);
-    }
-
-
-    /**
-     * Helper for nextNode, does all the actual work
-     */
-    public Node nextNode1(int depth) {
+    public Node nextNode(int depth) {
         Node begin = nextToken();
 
         // end of file
@@ -258,7 +249,7 @@ public class PreParser {
             return null;
         } else if (isOpen(begin)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
-            Node iter = nextNode1(depth + 1);
+            Node iter = nextNode(depth + 1);
 
             while (!matchDelim(begin, iter)) {
                 if (iter == null) {
@@ -269,7 +260,7 @@ public class PreParser {
                     return null;
                 } else {
                     elements.add(iter);
-                    iter = nextNode1(depth + 1);
+                    iter = nextNode(depth + 1);
                 }
             }
             return new Tuple(elements, begin, iter, begin.file, begin.start, iter.end, begin.line, begin.col);
@@ -279,21 +270,30 @@ public class PreParser {
     }
 
 
-    /**
-     * Parser
-     * Just iteratively getting all the nodes out of the file
-     *
-     * @return a list of Nodes
-     */
-    public List<Node> parse() {
-        List<Node> nodes = new ArrayList<>();
+    // wrapper for the actual parser
+    public Node nextSexp() {
+        return nextNode(0);
+    }
 
-        Node s = nextNode();
+
+    // parse file into a Node
+    public Node parse() {
+        List<Node> elements = new ArrayList<>();
+        // synthetic block keyword
+        elements.add(genName(Constants.SEQ_KEYWORD));
+
+        Node s = nextSexp();
         while (s != null) {
-            nodes.add(s);
-            s = nextNode();
+            elements.add(s);
+            s = nextSexp();
         }
-        return nodes;
+        return new Tuple(elements, genName(Constants.PAREN_BEGIN), genName(Constants.PAREN_END),
+                file, 0, text.length(), 0, 0);
+    }
+
+
+    public Name genName(String id) {
+        return new Name(id, file, 0, 0, 0, 0);
     }
 
 
