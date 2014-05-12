@@ -15,6 +15,14 @@ public class Name extends Node {
     }
 
 
+    /**
+     * Generate a name without location info
+     */
+    public static Name genName(String id) {
+        return new Name(id, null, 0, 0, 0, 0);
+    }
+
+
     public Value interp(Scope s) {
         return s.lookup(id);
     }

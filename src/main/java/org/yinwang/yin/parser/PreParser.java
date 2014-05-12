@@ -296,20 +296,20 @@ public class PreParser {
     public Node parse() {
         List<Node> elements = new ArrayList<>();
         // synthetic block keyword
-        elements.add(genName(Constants.SEQ_KEYWORD));
+        elements.add(Name.genName(Constants.SEQ_KEYWORD));
 
         Node s = nextSexp();
         while (s != null) {
             elements.add(s);
             s = nextSexp();
         }
-        return new Tuple(elements, genName(Constants.PAREN_BEGIN), genName(Constants.PAREN_END),
-                file, 0, text.length(), 0, 0);
-    }
 
-
-    public Name genName(String id) {
-        return new Name(id, file, 0, 0, 0, 0);
+        return new Tuple(
+                elements,
+                Name.genName(Constants.PAREN_BEGIN),
+                Name.genName(Constants.PAREN_END),
+                file, 0, text.length(), 0, 0
+        );
     }
 
 
