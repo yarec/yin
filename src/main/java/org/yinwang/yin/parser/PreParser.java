@@ -10,8 +10,9 @@ import java.util.*;
 
 
 /**
- * first phase parser
- * parse into S-expression like format
+ * First phase parser
+ * parse text into a meanlingless but more structured format
+ * similar to S-expressions but with less syntax
  */
 public class PreParser {
 
@@ -78,42 +79,30 @@ public class PreParser {
 
 
     public boolean isOpen(Node c) {
-        if (c instanceof Delimeter) {
-            return delimMap.keySet().contains(((Delimeter) c).shape);
-        } else {
-            return false;
-        }
+        return (c instanceof Delimeter) && delimMap.keySet().contains(((Delimeter) c).shape);
     }
 
 
     public boolean isClose(Node c) {
-        if (c instanceof Delimeter) {
-            return delimMap.values().contains(((Delimeter) c).shape);
-        } else {
-            return false;
-        }
+        return (c instanceof Delimeter) && delimMap.values().contains(((Delimeter) c).shape);
     }
 
 
     public boolean matchString(String open, String close) {
         String matched = delimMap.get(open);
-        if (matched != null && matched.equals(close)) {
-            return true;
-        } else {
-            return false;
-        }
+        return matched != null && matched.equals(close);
     }
 
 
     public boolean matchDelim(Node open, Node close) {
-        return (open instanceof Delimeter &&
-                close instanceof Delimeter &&
-                matchString(((Delimeter) open).shape, ((Delimeter) close).shape));
+        return (open instanceof Delimeter) &&
+                (close instanceof Delimeter) &&
+                matchString(((Delimeter) open).shape, ((Delimeter) close).shape);
     }
 
 
     /**
-     * lexer
+     * Lexer
      *
      * @return a token or null if file ends
      */
@@ -243,7 +232,7 @@ public class PreParser {
 
 
     /**
-     * parser
+     * Parser
      *
      * @return a Node or null if file ends
      */
@@ -310,6 +299,6 @@ public class PreParser {
 
     public static void main(String[] args) {
         PreParser p = new PreParser(args[0]);
-        _.msg("S-expression: " + p.parse());
+        _.msg("parsing result: " + p.parse());
     }
 }
