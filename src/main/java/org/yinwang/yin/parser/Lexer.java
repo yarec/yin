@@ -14,7 +14,7 @@ import java.util.*;
  * parse text into a meanlingless but more structured format
  * similar to S-expressions but with less syntax
  */
-public class PreParser {
+public class Lexer {
 
     public String file;
     public String text;
@@ -30,7 +30,7 @@ public class PreParser {
     public final Map<String, String> delimMap = new HashMap<>();
 
 
-    public PreParser(String file) {
+    public Lexer(String file) {
         this.file = _.unifyPath(file);
         this.text = _.readFile(file);
         this.offset = 0;
@@ -145,7 +145,7 @@ public class PreParser {
      * @return a token or null if file ends
      */
     @Nullable
-    private Node nextToken() {
+    public Node nextToken() {
 
         skipSpacesAndComments();
 
@@ -247,79 +247,18 @@ public class PreParser {
     }
 
 
-    /**
-     * Get next node from token stream
-     */
-    public Node nextNode() {
-        return nextNode1(0);
-    }
-
-
-    /**
-     * Helper for nextNode, which does the real work
-     *
-     * @return a Node or null if file ends
-     */
-    public Node nextNode1(int depth) {
-        Node begin = nextToken();
-
-        // end of file
-        if (begin == null) {
-            return null;
-        }
-
-        if (depth == 0 && isClose(begin)) {
-            _.abort(begin, "unmatched closing delimeter: " + begin);
-            return null;
-        } else if (isOpen(begin)) {   // try to get matched (...)
-            List<Node> elements = new ArrayList<>();
-            Node iter = nextNode1(depth + 1);
-
-            while (!matchDelim(begin, iter)) {
-                if (iter == null) {
-                    _.abort(begin, "unclosed delimeter: " + begin);
-                    return null;
-                } else if (isClose(iter)) {
-                    _.abort(iter, "unmatched closing delimeter: " + iter);
-                    return null;
-                } else {
-                    elements.add(iter);
-                    iter = nextNode1(depth + 1);
-                }
-            }
-            return new Tuple(elements, begin, iter, begin.file, begin.start, iter.end, begin.line, begin.col);
-        } else {
-            return begin;
-        }
-    }
-
-
-    /**
-     * Parse file into a Node
-     *
-     * @return a Tuple containing the file's parse tree
-     */
-    public Node parse() {
-        List<Node> elements = new ArrayList<>();
-        elements.add(Name.genName(Constants.SEQ_KEYWORD));      // synthetic block keyword
-
-        Node s = nextNode();
-        while (s != null) {
-            elements.add(s);
-            s = nextNode();
-        }
-
-        return new Tuple(
-                elements,
-                Name.genName(Constants.PAREN_BEGIN),
-                Name.genName(Constants.PAREN_END),
-                file, 0, text.length(), 0, 0
-        );
-    }
-
-
     public static void main(String[] args) {
-        PreParser p = new PreParser(args[0]);
-        _.msg("preparser result: " + p.parse());
+        Lexer lex = new Lexer(args[0]);
+
+        List<Node> tokens = new ArrayList<>();
+        Node n = lex.nextToken();
+        while (n != null) {
+            tokens.add(n);
+            n = lex.nextToken();
+        }
+        _.msg("lexer result: ");
+        for (Node node : tokens) {
+            _.msg(node.toString());
+        }
     }
 }
