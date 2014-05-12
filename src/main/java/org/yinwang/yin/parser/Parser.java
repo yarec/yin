@@ -14,7 +14,7 @@ public class Parser {
 
     public static Node parse(String file) {
         PreParser preparser = new PreParser(file);
-        Node prenode = preparser.parse();
+        List<Node> prenode = preparser.parse();
         Node grouped = groupAttr(prenode);
         return parseNode(grouped);
     }
@@ -293,7 +293,7 @@ public class Parser {
     }
 
 
-    public static Node groupAttr(Node prenode) {
+    public static Node groupAttr(List<Node> prenode) {
         if (prenode instanceof Tuple) {
             Tuple t = (Tuple) prenode;
             List<Node> elements = t.elements;
