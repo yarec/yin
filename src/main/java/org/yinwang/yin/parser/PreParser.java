@@ -101,16 +101,20 @@ public class PreParser {
     }
 
 
+    public void skipSpaces() {
+        while (offset < text.length() &&
+                Character.isWhitespace(text.charAt(offset)))
+        {
+            forward();
+        }
+    }
+
+
     public void skipSpaceAndComments() {
         boolean seenComment = true;
         while (seenComment) {
             seenComment = false;
-            // skip spaces
-            while (offset < text.length() &&
-                    Character.isWhitespace(text.charAt(offset)))
-            {
-                forward();
-            }
+            skipSpaces();
 
             // comments
             if (offset + Constants.LINE_COMMENT.length() <= text.length() &&
