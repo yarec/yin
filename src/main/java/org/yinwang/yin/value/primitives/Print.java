@@ -18,10 +18,10 @@ public class Print extends PrimFun {
     public Value apply(List<Value> args, Node location) {
         boolean first = true;
         for (Value v : args) {
-            System.out.print(v);
             if (!first) {
                 System.out.print(", ");
             }
+            System.out.print(v);
             first = false;
         }
         System.out.println();
