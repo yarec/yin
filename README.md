@@ -16,8 +16,8 @@ following problems:
 
 
 Solving these problems will need lots of inputs from programmers' experiences.
-You are welcome to follow my development of this language and let me know your
-experiences and perspectives, so that I can make the best decision.
+You are welcome to follow my development and let me know your experiences and
+perspectives, so that I can make the best decision.
 
 
 
