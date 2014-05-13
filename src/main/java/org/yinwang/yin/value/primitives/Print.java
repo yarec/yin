@@ -1,37 +1,35 @@
 package org.yinwang.yin.value.primitives;
 
 
-import org.yinwang.yin._;
 import org.yinwang.yin.ast.Node;
-import org.yinwang.yin.value.*;
+import org.yinwang.yin.value.PrimFun;
+import org.yinwang.yin.value.Value;
 
 import java.util.List;
 
 public class Print extends PrimFun {
 
     public Print() {
-        super("not", 1);
+        super("print", 1);
     }
 
 
     @Override
     public Value apply(List<Value> args, Node location) {
-
-        Value v1 = args.get(0);
-        if (v1 instanceof BoolValue) {
-            return new BoolValue(!((BoolValue) v1).value);
+        boolean first = true;
+        for (Value v : args) {
+            System.out.print(v);
+            if (!first) {
+                System.out.print(", ");
+            }
+            first = false;
         }
-        _.abort(location, "incorrect argument type for not: " + v1);
-        return null;
+        System.out.println();
+        return Value.VOID;
     }
 
 
     public Value typecheck(List<Value> args, Node location) {
-        Value v1 = args.get(0);
-        if (v1 instanceof BoolType) {
-            return Type.BOOL;
-        }
-        _.abort(location, "incorrect argument type for not: " + v1);
-        return null;
+        return Value.VOID;
     }
 }

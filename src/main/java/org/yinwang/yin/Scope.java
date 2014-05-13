@@ -154,6 +154,8 @@ public class Scope {
         init.putValue("or", new Or());
         init.putValue("not", new Not());
 
+        init.putValue("print", new Print());
+
         init.putValue("true", new BoolValue(true));
         init.putValue("false", new BoolValue(false));
 
