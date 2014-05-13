@@ -3,6 +3,7 @@ package org.yinwang.yin;
 
 import org.yinwang.yin.ast.Node;
 import org.yinwang.yin.parser.Parser;
+import org.yinwang.yin.parser.ParserException;
 import org.yinwang.yin.value.Value;
 
 public class Interpreter {
@@ -16,7 +17,13 @@ public class Interpreter {
 
 
     public Value interp(String file) {
-        Node program = Parser.parse(file);
+        Node program;
+        try {
+            program = Parser.parse(file);
+        } catch (ParserException e) {
+            _.abort("parsing error: " + e);
+            return null;
+        }
         return program.interp(Scope.buildInitScope());
     }
 

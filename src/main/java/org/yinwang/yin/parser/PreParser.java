@@ -33,7 +33,7 @@ public class PreParser {
     /**
      * Get next node from token stream
      */
-    public Node nextNode() {
+    public Node nextNode() throws ParserException {
         return nextNode1(0);
     }
 
@@ -43,7 +43,7 @@ public class PreParser {
      *
      * @return a Node or null if file ends
      */
-    public Node nextNode1(int depth) {
+    public Node nextNode1(int depth) throws ParserException {
         Node begin = lexer.nextToken();
 
         // end of file
@@ -82,7 +82,7 @@ public class PreParser {
      *
      * @return a Tuple containing the file's parse tree
      */
-    public Node parse() {
+    public Node parse() throws ParserException {
         List<Node> elements = new ArrayList<>();
         elements.add(Name.genName(Constants.SEQ_KEYWORD));      // synthetic block keyword
 
@@ -101,7 +101,7 @@ public class PreParser {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParserException {
         PreParser p = new PreParser(args[0]);
         _.msg("preparser result: " + p.parse());
     }

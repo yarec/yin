@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class Parser {
 
-    public static Node parse(String file) {
+    public static Node parse(String file) throws ParserException {
         PreParser preparser = new PreParser(file);
         Node prenode = preparser.parse();
         Node grouped = groupAttr(prenode);
@@ -346,7 +346,7 @@ public class Parser {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParserException {
         Node tree = Parser.parse(args[0]);
         _.msg(tree.toString());
     }

@@ -4,6 +4,7 @@ package org.yinwang.yin;
 import org.yinwang.yin.ast.Declare;
 import org.yinwang.yin.ast.Node;
 import org.yinwang.yin.parser.Parser;
+import org.yinwang.yin.parser.ParserException;
 import org.yinwang.yin.value.FunType;
 import org.yinwang.yin.value.Type;
 import org.yinwang.yin.value.Value;
@@ -27,7 +28,13 @@ public class TypeChecker {
 
 
     public Value typecheck(String file) {
-        Node program = Parser.parse(file);
+        Node program;
+        try {
+            program = Parser.parse(file);
+        } catch (ParserException e) {
+            _.abort("parsing error: " + e);
+            return null;
+        }
         Scope s = Scope.buildInitTypeScope();
         Value ret = program.typecheck(s);
 

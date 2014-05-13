@@ -98,7 +98,7 @@ public class Lexer {
     }
 
 
-    public Node scanString() {
+    public Node scanString() throws ParserException {
         int start = offset;
         int startLine = line;
         int startCol = col;
@@ -106,8 +106,8 @@ public class Lexer {
 
         while (offset < text.length() && !atStringStart()) {
             if (text.charAt(offset) == '\n') {
-                _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
-                return null;
+//                _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
+                throw new ParserException("runaway string", startLine, startCol, offset);
             }
             forward();
         }
@@ -189,7 +189,7 @@ public class Lexer {
      * @return a token or null if file ends
      */
     @Nullable
-    public Node nextToken() {
+    public Node nextToken() throws ParserException {
 
         skipSpacesAndComments();
 
@@ -226,7 +226,7 @@ public class Lexer {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParserException {
         Lexer lex = new Lexer(args[0]);
 
         List<Node> tokens = new ArrayList<>();
