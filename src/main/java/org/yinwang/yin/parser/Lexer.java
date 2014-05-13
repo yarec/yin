@@ -6,13 +6,15 @@ import org.yinwang.yin.Constants;
 import org.yinwang.yin._;
 import org.yinwang.yin.ast.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * First phase parser
  * parse text into a meanlingless but more structured format
  * similar to S-expressions but with less syntax
+ * (just matched (..) [..] and {..})
  */
 public class Lexer {
 
@@ -23,11 +25,6 @@ public class Lexer {
     public int offset;
     public int line;
     public int col;
-
-    // all delimeters
-    public final Set<String> delims = new HashSet<>();
-    // map open delimeters to their matched closing ones
-    public final Map<String, String> delimMap = new HashMap<>();
 
 
     public Lexer(String file) {
@@ -41,11 +38,11 @@ public class Lexer {
             _.abort("failed to read file: " + file);
         }
 
-        addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
-        addDelimiterPair(Constants.CURLY_BEGIN, Constants.CURLY_END);
-        addDelimiterPair(Constants.SQUARE_BEGIN, Constants.ARRAY_END);
+        Delimeter.addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
+        Delimeter.addDelimiterPair(Constants.CURLY_BEGIN, Constants.CURLY_END);
+        Delimeter.addDelimiterPair(Constants.SQUARE_BEGIN, Constants.ARRAY_END);
 
-        addDelimiter(Constants.ATTRIBUTE_ACCESS);
+        Delimeter.addDelimiter(Constants.ATTRIBUTE_ACCESS);
     }
 
 
@@ -58,46 +55,6 @@ public class Lexer {
             col++;
             offset++;
         }
-    }
-
-
-    public void addDelimiterPair(String open, String close) {
-        delims.add(open);
-        delims.add(close);
-        delimMap.put(open, close);
-    }
-
-
-    public void addDelimiter(String delim) {
-        delims.add(delim);
-    }
-
-
-    public boolean isDelimiter(char c) {
-        return delims.contains(Character.toString(c));
-    }
-
-
-    public boolean isOpen(Node c) {
-        return (c instanceof Delimeter) && delimMap.keySet().contains(((Delimeter) c).shape);
-    }
-
-
-    public boolean isClose(Node c) {
-        return (c instanceof Delimeter) && delimMap.values().contains(((Delimeter) c).shape);
-    }
-
-
-    public boolean matchString(String open, String close) {
-        String matched = delimMap.get(open);
-        return matched != null && matched.equals(close);
-    }
-
-
-    public boolean matchDelim(Node open, Node close) {
-        return (open instanceof Delimeter) &&
-                (close instanceof Delimeter) &&
-                matchString(((Delimeter) open).shape, ((Delimeter) close).shape);
     }
 
 
@@ -180,7 +137,7 @@ public class Lexer {
 
         while (offset < text.length() &&
                 !Character.isWhitespace(cur) &&
-                !(isDelimiter(cur) && cur != '.'))
+                !(Delimeter.isDelimiter(cur) && cur != '.'))
         {
             forward();
             if (offset < text.length()) {
@@ -213,7 +170,7 @@ public class Lexer {
 
         while (offset < text.length() &&
                 !Character.isWhitespace(cur) &&
-                !isDelimiter(cur))
+                !Delimeter.isDelimiter(cur))
         {
             forward();
             if (offset < text.length()) {
@@ -248,7 +205,7 @@ public class Lexer {
         {
             // case 1. delimiters
             char cur = text.charAt(offset);
-            if (isDelimiter(cur)) {
+            if (Delimeter.isDelimiter(cur)) {
                 Node ret = new Delimeter(Character.toString(cur), file, offset, offset + 1, line, col);
                 forward();
                 return ret;

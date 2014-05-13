@@ -2,6 +2,7 @@ package org.yinwang.yin.parser;
 
 import org.yinwang.yin.Constants;
 import org.yinwang.yin._;
+import org.yinwang.yin.ast.Delimeter;
 import org.yinwang.yin.ast.Name;
 import org.yinwang.yin.ast.Node;
 import org.yinwang.yin.ast.Tuple;
@@ -45,18 +46,18 @@ public class PreParser {
             return null;
         }
 
-        if (depth == 0 && lexer.isClose(begin)) {
+        if (depth == 0 && Delimeter.isClose(begin)) {
             _.abort(begin, "unmatched closing delimeter: " + begin);
             return null;
-        } else if (lexer.isOpen(begin)) {   // try to get matched (...)
+        } else if (Delimeter.isOpen(begin)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
             Node iter = nextNode1(depth + 1);
 
-            while (!lexer.matchDelim(begin, iter)) {
+            while (!Delimeter.matchDelimeter(begin, iter)) {
                 if (iter == null) {
                     _.abort(begin, "unclosed delimeter: " + begin);
                     return null;
-                } else if (lexer.isClose(iter)) {
+                } else if (Delimeter.isClose(iter)) {
                     _.abort(iter, "unmatched closing delimeter: " + iter);
                     return null;
                 } else {
