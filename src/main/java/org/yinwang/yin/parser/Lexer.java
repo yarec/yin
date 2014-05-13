@@ -88,9 +88,7 @@ public class Lexer {
 
 
     public void skipSpacesAndComments() {
-        while (skipSpaces() || skipComments()) {
-            // do nothing
-        }
+        while (skipSpaces() || skipComments());
     }
 
 
