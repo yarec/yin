@@ -1,3 +1,19 @@
+;; Instructions
+;; ============
+;; 1. copy yin-mode.el and parenface.el into .emacs.d
+;; 2. put the following lines into ~/.emacs file:
+;; 3. optional: download and install paredit-mode.el (recommended)
+
+;; (add-to-list 'auto-mode-alist '("\\.yin$" . yin-mode))
+;; (require 'yin-mode)
+
+;; (add-hook 'yin-mode-hook
+;;   (lambda ()
+;;     (paredit-mode 1)
+;;     (paren-face-add-support yin-font-lock-keywords)
+;;     (set-face-foreground 'paren-face "DimGray")
+
+
 (defvar yin-mode-syntax-table
   (let ((st (make-syntax-table))
 	(i 0))
