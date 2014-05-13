@@ -10,6 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Parser
+ * parse S-expression-like structure into more structured data
+ * with Classes, fields etc that can be easily accessed
+ */
 public class Parser {
 
     public static Node parse(String file) {

@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * parse text into a meanlingless but more structured format
+ * similar to S-expressions but with less syntax
+ * (just matched (..) [..] and {..})
+ */
 public class PreParser {
 
     String file;

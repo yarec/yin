@@ -11,10 +11,8 @@ import java.util.List;
 
 
 /**
- * First phase parser
- * parse text into a meanlingless but more structured format
- * similar to S-expressions but with less syntax
- * (just matched (..) [..] and {..})
+ * Lexer
+ * split text stream into tokens, nubmers, delimeters etc
  */
 public class Lexer {
 
