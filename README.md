@@ -3,12 +3,21 @@
 
 ### Introduction
 
-I got tired of waiting for people to design and implement a language I'd love
-(and not just usable), so I started to implement my own. Based on my
-multi-facetted knowledge of programming language research, I know this language
-will be different, but I'm sure not everyone would like it. You are welcome to
-follow my development of this language and learn from my experiences and design
-decisions.
+I started to design a new programming language, which tries to solve the
+following problems:
+
+- Most languages fail to learn from some historical mistakes
+- Most languages have a religious following and an over-enthusiastic community, which prevents them from correcting their mistakes
+- Some languages do too little for programmers, some languages do too much
+- Some languages provide too little abstraction, some languages provide too much
+- Some languages focus too little on usability, some languages focus too much on usability and not much on everything else
+- Some languages learned too little from mathematics and logics, some languages learned too much
+- Some languages infer too little about types, some languages infer too much
+
+
+Solving these problems will need lots of inputs from programmers' experiences.
+You are welcome to follow my development of this language and let me know your
+experiences and perspectives, so that I can make the best decision.
 
 
 
@@ -20,12 +29,29 @@ to learn how to design and implement a language, this might be a good place to
 look.
 
 
+
 ### Implemented features
 
 - basic types (integers, floats, arrays, records)
 - primitive operators (arithmetic)
 - first-class functions (closures)
-- type system and type checker
+- type system (incomplete)
+
+
+
+### Implemented facilities
+
+- parser
+- interpreter
+- type checker
+
+
+
+### Still missing
+
+- testing framework
+- compiler
+- runtime system
 
 
 
