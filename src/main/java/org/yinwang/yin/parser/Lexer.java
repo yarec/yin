@@ -205,7 +205,7 @@ public class Lexer {
     }
 
 
-    public Node scanName() {
+    public Node scanNameOrKeyword() {
         char cur = text.charAt(offset);
         int start = offset;
         int startLine = line;
@@ -245,28 +245,31 @@ public class Lexer {
             return null;
         }
 
-        char cur = text.charAt(offset);
-
-        // delimiters
-        if (isDelimiter(cur)) {
-            Node ret = new Delimeter(Character.toString(cur), file, offset, offset + 1, line, col);
-            forward();
-            return ret;
+        {
+            // case 1. delimiters
+            char cur = text.charAt(offset);
+            if (isDelimiter(cur)) {
+                Node ret = new Delimeter(Character.toString(cur), file, offset, offset + 1, line, col);
+                forward();
+                return ret;
+            }
         }
 
-        // string
+        // case 2. string
         if (atStringStart()) {
             return scanString();
         }
 
+        // case 3. number
         if (Character.isDigit(text.charAt(offset)) ||
                 ((text.charAt(offset) == '+' || text.charAt(offset) == '-')
                         && Character.isDigit(text.charAt(offset + 1))))
         {
             return scanNumber();
-        } else {
-            return scanName();
         }
+
+        // case 4. name or keyword
+        return scanNameOrKeyword();
     }
 
 
