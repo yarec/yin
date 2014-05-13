@@ -139,6 +139,39 @@ public class Lexer {
     }
 
 
+    public boolean atStringStart() {
+        return text.charAt(offset) == '"' &&
+                (offset == 0 || text.charAt(offset - 1) != '\\');
+    }
+
+
+    public Node scanString() {
+        int start = offset;
+        int startLine = line;
+        int startCol = col;
+        forward();   // skip "
+
+        while (offset < text.length() && !atStringStart()) {
+            if (text.charAt(offset) == '\n') {
+                _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
+                return null;
+            }
+            forward();
+        }
+
+        if (offset >= text.length()) {
+            _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
+            return null;
+        }
+
+        forward(); // skip "
+        int end = offset;
+
+        String content = text.substring(start + 1, end - 1);
+        return new Str(content, file, start, end, startLine, startCol);
+    }
+
+
     /**
      * Lexer
      *
@@ -164,32 +197,8 @@ public class Lexer {
         }
 
         // string
-        if (text.charAt(offset) == '"' && (offset == 0 || text.charAt(offset - 1) != '\\')) {
-            int start = offset;
-            int startLine = line;
-            int startCol = col;
-            forward();   // skip "
-
-            while (offset < text.length() &&
-                    !(text.charAt(offset) == '"' && text.charAt(offset - 1) != '\\'))
-            {
-                if (text.charAt(offset) == '\n') {
-                    _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
-                    return null;
-                }
-                forward();
-            }
-
-            if (offset >= text.length()) {
-                _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
-                return null;
-            }
-
-            forward(); // skip "
-            int end = offset;
-
-            String content = text.substring(start + 1, end - 1);
-            return new Str(content, file, start, end, startLine, startCol);
+        if (atStringStart()) {
+            return scanString();
         }
 
 
