@@ -172,6 +172,64 @@ public class Lexer {
     }
 
 
+    public Node scanNumber() {
+        char cur = text.charAt(offset);
+        int start = offset;
+        int startLine = line;
+        int startCol = col;
+
+        while (offset < text.length() &&
+                !Character.isWhitespace(cur) &&
+                !(isDelimiter(cur) && cur != '.'))
+        {
+            forward();
+            if (offset < text.length()) {
+                cur = text.charAt(offset);
+            }
+        }
+
+        String content = text.substring(start, offset);
+
+        IntNum intNum = IntNum.parse(content, file, start, offset, startLine, startCol);
+        if (intNum != null) {
+            return intNum;
+        } else {
+            FloatNum floatNum = FloatNum.parse(content, file, start, offset, startLine, startCol);
+            if (floatNum != null) {
+                return floatNum;
+            } else {
+                _.abort(file + ":" + startLine + ":" + startCol + " : incorrect number format: " + content);
+                return null;
+            }
+        }
+    }
+
+
+    public Node scanName() {
+        char cur = text.charAt(offset);
+        int start = offset;
+        int startLine = line;
+        int startCol = col;
+
+        while (offset < text.length() &&
+                !Character.isWhitespace(cur) &&
+                !isDelimiter(cur))
+        {
+            forward();
+            if (offset < text.length()) {
+                cur = text.charAt(offset);
+            }
+        }
+
+        String content = text.substring(start, offset);
+        if (content.matches(":\\w.*")) {
+            return new Keyword(content.substring(1), file, start, offset, startLine, startCol);
+        } else {
+            return new Name(content, file, start, offset, startLine, startCol);
+        }
+    }
+
+
     /**
      * Lexer
      *
@@ -201,57 +259,13 @@ public class Lexer {
             return scanString();
         }
 
-
-        // find consequtive token
-        int start = offset;
-        int startLine = line;
-        int startCol = col;
-
-        if (Character.isDigit(text.charAt(start)) ||
-                ((text.charAt(start) == '+' || text.charAt(start) == '-')
-                        && Character.isDigit(text.charAt(start + 1))))
+        if (Character.isDigit(text.charAt(offset)) ||
+                ((text.charAt(offset) == '+' || text.charAt(offset) == '-')
+                        && Character.isDigit(text.charAt(offset + 1))))
         {
-            while (offset < text.length() &&
-                    !Character.isWhitespace(cur) &&
-                    !(isDelimiter(cur) && cur != '.'))
-            {
-                forward();
-                if (offset < text.length()) {
-                    cur = text.charAt(offset);
-                }
-            }
-
-            String content = text.substring(start, offset);
-
-            IntNum intNum = IntNum.parse(content, file, start, offset, startLine, startCol);
-            if (intNum != null) {
-                return intNum;
-            } else {
-                FloatNum floatNum = FloatNum.parse(content, file, start, offset, startLine, startCol);
-                if (floatNum != null) {
-                    return floatNum;
-                } else {
-                    _.abort(file + ":" + startLine + ":" + startCol + " : incorrect number format: " + content);
-                    return null;
-                }
-            }
+            return scanNumber();
         } else {
-            while (offset < text.length() &&
-                    !Character.isWhitespace(cur) &&
-                    !isDelimiter(cur))
-            {
-                forward();
-                if (offset < text.length()) {
-                    cur = text.charAt(offset);
-                }
-            }
-
-            String content = text.substring(start, offset);
-            if (content.matches(":\\w.*")) {
-                return new Keyword(content.substring(1), file, start, offset, startLine, startCol);
-            } else {
-                return new Name(content, file, start, offset, startLine, startCol);
-            }
+            return scanName();
         }
     }
 
