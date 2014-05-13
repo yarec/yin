@@ -14,6 +14,7 @@
 ;;     (paren-face-add-support yin-font-lock-keywords)
 ;;     (set-face-foreground 'paren-face "DimGray")
 ;;     (mapc (lambda (x) (put x 'yin-indent-function 1)) *binding-constructs*)
+
 ;;     (defun paredit-insert-comment ()
 ;;       (let ((code-after-p
 ;;              (save-excursion (paredit-skip-whitespace t (point-at-eol))
@@ -28,13 +29,13 @@
 ;;                       (and indent (zerop indent))))
 ;;                ;; Top-level comment
 ;;                (if code-after-p (save-excursion (newline)))
-;;                (insert "--- "))
+;;                (insert comment-start))
 ;;               ((or code-after-p (not code-before-p))
 ;;                ;; Code comment
 ;;                (if code-before-p
 ;;                    (newline-and-indent)
 ;;                  (lisp-indent-line))
-;;                (insert "-- ")
+;;                (insert comment-start)
 ;;                (if code-after-p
 ;;                    (save-excursion
 ;;                      (newline)
@@ -43,8 +44,7 @@
 ;;               (t
 ;;                ;; Margin comment
 ;;                (indent-to comment-column 1) ; 1 -> force one leading space
-;;                (insert "-- ")))))
-;;     ))
+;;                (insert comment-start)))))
 
 
 (defvar yin-mode-syntax-table
