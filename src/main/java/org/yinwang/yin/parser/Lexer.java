@@ -106,16 +106,20 @@ public class Lexer {
         forward();   // skip "
 
         while (offset < text.length() && !atStringStart()) {
+            // skip any char after backslash
+            if (text.charAt(offset) == '\\') {
+                forward();
+            }
+            // detect runaway strings early by not allowing newlines in it
             if (text.charAt(offset) == '\n') {
-//                _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
                 throw new ParserException("runaway string", startLine, startCol, offset);
             }
             forward();
         }
 
+        // detect runaway strings at end of file
         if (offset >= text.length()) {
-            _.abort(file + ":" + startLine + ":" + startCol + ": runaway string");
-            return null;
+            throw new ParserException("runaway string", startLine, startCol, offset);
         }
 
         forward(); // skip "
@@ -167,7 +171,8 @@ public class Lexer {
 
         while (offset < text.length() &&
                 !Character.isWhitespace(cur) &&
-                !Delimeter.isDelimiter(cur))
+                !Delimeter.isDelimiter(cur) &&
+                cur != '"')
         {
             forward();
             if (offset < text.length()) {
