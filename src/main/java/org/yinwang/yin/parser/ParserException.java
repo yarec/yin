@@ -17,6 +17,6 @@ public class ParserException extends Exception {
 
     @Override
     public String toString() {
-        return line + ":" + col + " parsing error " + getMessage();
+        return (line + 1) + ":" + (col + 1) + " parsing error " + getMessage();
     }
 }
