@@ -88,13 +88,14 @@ public class Lexer {
 
 
     public void skipSpacesAndComments() {
-        while (skipSpaces() || skipComments());
+        while (skipSpaces() || skipComments()) {
+            // do nothing
+        }
     }
 
 
     public boolean atStringStart() {
-        return text.charAt(offset) == '"' &&
-                (offset == 0 || text.charAt(offset - 1) != '\\');
+        return text.charAt(offset) == '"';
     }
 
 
