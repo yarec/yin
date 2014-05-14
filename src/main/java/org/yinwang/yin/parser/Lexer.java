@@ -94,18 +94,13 @@ public class Lexer {
     }
 
 
-    public boolean atStringStart() {
-        return text.charAt(offset) == '"';
-    }
-
-
     public Node scanString() throws ParserException {
         int start = offset;
         int startLine = line;
         int startCol = col;
-        forward();   // skip "
+        forward();    // skip "
 
-        while (offset < text.length() && !atStringStart()) {
+        while (offset < text.length() && text.charAt(offset) != '"') {
             // skip any char after backslash
             if (text.charAt(offset) == '\\') {
                 forward();
@@ -122,7 +117,7 @@ public class Lexer {
             throw new ParserException("runaway string", startLine, startCol, offset);
         }
 
-        forward(); // skip "
+        forward();    // skip "
         int end = offset;
 
         String content = text.substring(start + 1, end - 1);
@@ -215,7 +210,7 @@ public class Lexer {
         }
 
         // case 2. string
-        if (atStringStart()) {
+        if (text.charAt(offset) == '"') {
             return scanString();
         }
 
