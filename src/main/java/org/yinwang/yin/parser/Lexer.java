@@ -102,7 +102,7 @@ public class Lexer {
 
         while (offset < text.length() && text.charAt(offset) != '"') {
             // skip any char after backslash
-            if (text.charAt(offset) == '\\') {
+            if (text.charAt(offset) == '\\' && offset < text.length() - 1) {
                 forward();
             }
             // detect runaway strings early by not allowing newlines in it
