@@ -5,6 +5,8 @@
 ;; 3. optional: download and install paredit-mode.el (recommended)
 
 ;;; --------------------------------------------------------------------------
+;; (add-to-list 'load-path "~/.emacs.d")
+
 ;; (require 'yin-mode)
 ;; (add-to-list 'auto-mode-alist '("\\.yin$" . yin-mode))
 
@@ -44,7 +46,7 @@
 ;;               (t
 ;;                ;; Margin comment
 ;;                (indent-to comment-column 1) ; 1 -> force one leading space
-;;                (insert comment-start)))))
+;;                (insert comment-start)))))))
 
 
 (defvar yin-mode-syntax-table
