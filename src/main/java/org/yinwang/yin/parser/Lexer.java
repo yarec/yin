@@ -178,7 +178,7 @@ public class Lexer {
         }
 
         String content = text.substring(start, offset);
-        if (content.matches(":\\w.*")) {
+        if (content.startsWith(":")) {
             return new Keyword(content.substring(1), file, start, offset, startLine, startCol);
         } else {
             return new Name(content, file, start, offset, startLine, startCol);
