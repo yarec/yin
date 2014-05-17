@@ -122,11 +122,13 @@ public class Lexer {
 
             // skip any char after backslash
             else if (text.startsWith(Constants.STRING_ESCAPE, offset) && offset < text.length() - 1) {
-                skip(Constants.STRING_ESCAPE.length());
+                skip(Constants.STRING_ESCAPE.length() + 1);
             }
 
             // other characters (string content)
-            forward();
+            else {
+                forward();
+            }
         }
 
         int end = offset;
