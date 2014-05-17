@@ -139,20 +139,18 @@ public class Lexer {
     }
 
 
+    public static boolean isNumberChar(char c) {
+        return Character.isLetterOrDigit(c) || c == '.' || c == '+' || c == '-';
+    }
+
+
     public Node scanNumber() {
-        char cur = text.charAt(offset);
         int start = offset;
         int startLine = line;
         int startCol = col;
 
-        while (offset < text.length() &&
-                !Character.isWhitespace(cur) &&
-                !(Delimeter.isDelimiter(cur) && cur != '.'))
-        {
+        while (offset < text.length() && isNumberChar(text.charAt(offset))) {
             forward();
-            if (offset < text.length()) {
-                cur = text.charAt(offset);
-            }
         }
 
         String content = text.substring(start, offset);
