@@ -18,6 +18,10 @@ public class Constants {
     public static final String ATTRIBUTE_ACCESS = ".";
     public static final String RETURN_ARROW = "->";
 
+    public static final String QUOTE = "\"";
+    public static final String STRING_ESCAPE = "\\";
+
+
     // keywords
     public static final String SEQ_KEYWORD = "seq";
     public static final String FUN_KEYWORD = "fun";
