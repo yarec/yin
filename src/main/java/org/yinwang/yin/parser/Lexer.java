@@ -227,7 +227,7 @@ public class Lexer {
         // case 3. number
         if (Character.isDigit(text.charAt(offset)) ||
                 ((text.charAt(offset) == '+' || text.charAt(offset) == '-')
-                        && Character.isDigit(text.charAt(offset + 1))))
+                        && offset + 1 < text.length() && Character.isDigit(text.charAt(offset + 1))))
         {
             return scanNumber();
         }
