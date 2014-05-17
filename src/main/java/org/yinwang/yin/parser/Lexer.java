@@ -105,8 +105,7 @@ public class Lexer {
         int start = offset;
         int startLine = line;
         int startCol = col;
-        int quoteLen = Constants.QUOTE.length();
-        skip(quoteLen);    // skip quote mark
+        skip(Constants.STRING_START.length());    // skip quote mark
 
         while (true) {
             // detect runaway strings at end of file or at newline
@@ -115,13 +114,13 @@ public class Lexer {
             }
 
             // end of string
-            else if (text.startsWith(Constants.QUOTE, offset)) {
-                skip(quoteLen);    // skip quote mark
+            else if (text.startsWith(Constants.STRING_END, offset)) {
+                skip(Constants.STRING_END.length());    // skip quote mark
                 break;
             }
 
-            // skip any char after backslash
-            else if (text.startsWith(Constants.STRING_ESCAPE, offset) && offset < text.length() - 1) {
+            // skip any char after STRING_ESCAPE
+            else if (text.startsWith(Constants.STRING_ESCAPE, offset) && offset + 1 < text.length()) {
                 skip(Constants.STRING_ESCAPE.length() + 1);
             }
 
@@ -132,7 +131,10 @@ public class Lexer {
         }
 
         int end = offset;
-        String content = text.substring(start + quoteLen, end - quoteLen);
+        String content = text.substring(
+                start + Constants.STRING_START.length(),
+                end - Constants.STRING_END.length());
+
         return new Str(content, file, start, end, startLine, startCol);
     }
 
@@ -222,7 +224,7 @@ public class Lexer {
         }
 
         // case 2. string
-        if (text.startsWith(Constants.QUOTE, offset)) {
+        if (text.startsWith(Constants.STRING_START, offset)) {
             return scanString();
         }
 
