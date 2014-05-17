@@ -100,26 +100,28 @@ public class Lexer {
         int startCol = col;
         forward();    // skip "
 
-        while (offset < text.length() && text.charAt(offset) != '"') {
-            // skip any char after backslash
-            if (text.charAt(offset) == '\\' && offset < text.length() - 1) {
-                forward();
-            }
-            // detect runaway strings early by not allowing newlines in it
-            if (text.charAt(offset) == '\n') {
+        while (true) {
+            // detect runaway strings at end of file or at newline
+            if (offset >= text.length() || text.charAt(offset) == '\n') {
                 throw new ParserException("runaway string", startLine, startCol, offset);
             }
+
+            // end of string
+            else if (text.charAt(offset) == '"') {
+                forward();
+                break;
+            }
+
+            // skip any char after backslash
+            else if (text.charAt(offset) == '\\' && offset < text.length() - 1) {
+                forward();
+            }
+
+            // other characters (string content)
             forward();
         }
 
-        // detect runaway strings at end of file
-        if (offset >= text.length()) {
-            throw new ParserException("runaway string", startLine, startCol, offset);
-        }
-
-        forward();    // skip "
         int end = offset;
-
         String content = text.substring(start + 1, end - 1);
         return new Str(content, file, start, end, startLine, startCol);
     }
