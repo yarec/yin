@@ -1,6 +1,9 @@
 package org.yinwang.yin;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Constants {
 
     // delimiters and delimeter pairs
@@ -32,5 +35,10 @@ public class Constants {
     public static final String RECORD_KEYWORD = "record";
     public static final String DECLARE_KEYWORD = "declare";
     public static final String UNION_KEYWORD = "U";
+
+    public static List<Character> IDENT_CHARS =
+            Arrays.asList('~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '|',
+                    ':', ';', ',', '<', '>', '?', '/');
+
 
 }

@@ -170,21 +170,18 @@ public class Lexer {
     }
 
 
+    public static boolean isIdentifierChar(char c) {
+        return Character.isLetterOrDigit(c) || Constants.IDENT_CHARS.contains(c);
+    }
+
+
     public Node scanNameOrKeyword() {
-        char cur = text.charAt(offset);
         int start = offset;
         int startLine = line;
         int startCol = col;
 
-        while (offset < text.length() &&
-                !Character.isWhitespace(cur) &&
-                !Delimeter.isDelimiter(cur) &&
-                cur != '"')
-        {
+        while (offset < text.length() && isIdentifierChar(text.charAt(offset))) {
             forward();
-            if (offset < text.length()) {
-                cur = text.charAt(offset);
-            }
         }
 
         String content = text.substring(start, offset);
@@ -235,7 +232,13 @@ public class Lexer {
         }
 
         // case 4. name or keyword
-        return scanNameOrKeyword();
+        if (isIdentifierChar(text.charAt(offset))) {
+            return scanNameOrKeyword();
+        }
+
+        // case 5. syntax error
+        throw new ParserException("unrecognized syntax: " + text.substring(offset, offset + 1),
+                line, col, offset);
     }
 
 
