@@ -51,9 +51,7 @@ public class PreParser {
             return null;
         }
 
-        if (depth == 0 && Delimeter.isClose(begin)) {
-            throw new ParserException("unmatched closing delimeter", begin);
-        } else if (Delimeter.isOpen(begin)) {   // try to get matched (...)
+        if (Delimeter.isOpen(begin)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
             Node iter = nextNode1(depth + 1);
 
@@ -68,6 +66,8 @@ public class PreParser {
                 }
             }
             return new Tuple(elements, begin, iter, begin.file, begin.start, iter.end, begin.line, begin.col);
+        } else if (depth == 0 && Delimeter.isClose(begin)) {
+            throw new ParserException("unmatched closing delimeter", begin);
         } else {
             return begin;
         }
