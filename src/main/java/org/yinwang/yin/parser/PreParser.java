@@ -44,32 +44,32 @@ public class PreParser {
      * @return a Node or null if file ends
      */
     public Node nextNode1(int depth) throws ParserException {
-        Node begin = lexer.nextToken();
+        Node first = lexer.nextToken();
 
         // end of file
-        if (begin == null) {
+        if (first == null) {
             return null;
         }
 
-        if (Delimeter.isOpen(begin)) {   // try to get matched (...)
+        if (Delimeter.isOpen(first)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
-            Node iter = nextNode1(depth + 1);
+            Node next = nextNode1(depth + 1);
 
-            while (!Delimeter.matchDelimeter(begin, iter)) {
-                if (iter == null) {
-                    throw new ParserException("unclosed delimeter", begin);
-                } else if (Delimeter.isClose(iter)) {
-                    throw new ParserException("unmatched closing delimeter", iter);
+            while (!Delimeter.matchDelimeter(first, next)) {
+                if (next == null) {
+                    throw new ParserException("unclosed delimeter", first);
+                } else if (Delimeter.isClose(next)) {
+                    throw new ParserException("unmatched closing delimeter", next);
                 } else {
-                    elements.add(iter);
-                    iter = nextNode1(depth + 1);
+                    elements.add(next);
+                    next = nextNode1(depth + 1);
                 }
             }
-            return new Tuple(elements, begin, iter, begin.file, begin.start, iter.end, begin.line, begin.col);
-        } else if (depth == 0 && Delimeter.isClose(begin)) {
-            throw new ParserException("unmatched closing delimeter", begin);
+            return new Tuple(elements, first, next, first.file, first.start, next.end, first.line, first.col);
+        } else if (depth == 0 && Delimeter.isClose(first)) {
+            throw new ParserException("unmatched closing delimeter", first);
         } else {
-            return begin;
+            return first;
         }
     }
 
