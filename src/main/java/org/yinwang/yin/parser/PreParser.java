@@ -52,19 +52,16 @@ public class PreParser {
         }
 
         if (depth == 0 && Delimeter.isClose(begin)) {
-            _.abort(begin, "unmatched closing delimeter: " + begin);
-            return null;
+            throw new ParserException("unmatched closing delimeter", begin);
         } else if (Delimeter.isOpen(begin)) {   // try to get matched (...)
             List<Node> elements = new ArrayList<>();
             Node iter = nextNode1(depth + 1);
 
             while (!Delimeter.matchDelimeter(begin, iter)) {
                 if (iter == null) {
-                    _.abort(begin, "unclosed delimeter: " + begin);
-                    return null;
+                    throw new ParserException("unclosed delimeter", begin);
                 } else if (Delimeter.isClose(iter)) {
-                    _.abort(iter, "unmatched closing delimeter: " + iter);
-                    return null;
+                    throw new ParserException("unmatched closing delimeter", iter);
                 } else {
                     elements.add(iter);
                     iter = nextNode1(depth + 1);

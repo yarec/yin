@@ -144,7 +144,7 @@ public class Lexer {
     }
 
 
-    public Node scanNumber() {
+    public Node scanNumber() throws ParserException {
         int start = offset;
         int startLine = line;
         int startCol = col;
@@ -163,8 +163,7 @@ public class Lexer {
             if (floatNum != null) {
                 return floatNum;
             } else {
-                _.abort(file + ":" + startLine + ":" + startCol + " : incorrect number format: " + content);
-                return null;
+                throw new ParserException("incorrect number format: " + content, startLine, startCol, start);
             }
         }
     }

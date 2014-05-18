@@ -1,6 +1,8 @@
 package org.yinwang.yin.parser;
 
 
+import org.yinwang.yin.ast.Node;
+
 public class ParserException extends Exception {
     public int line;
     public int col;
@@ -12,6 +14,14 @@ public class ParserException extends Exception {
         this.line = line;
         this.col = col;
         this.start = start;
+    }
+
+
+    public ParserException(String message, Node node) {
+        super(message);
+        this.line = node.line;
+        this.col = node.col;
+        this.start = node.start;
     }
 
 
