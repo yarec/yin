@@ -64,7 +64,7 @@ public class Delimeter extends Node {
     }
 
 
-    public static boolean matchDelimeter(Node open, Node close) {
+    public static boolean match(Node open, Node close) {
         if (!(open instanceof Delimeter) ||
                 !(close instanceof Delimeter))
         {

@@ -55,7 +55,7 @@ public class PreParser {
             List<Node> elements = new ArrayList<>();
             Node next = nextNode1(depth + 1);
 
-            while (!Delimeter.matchDelimeter(first, next)) {
+            while (!Delimeter.match(first, next)) {
                 if (next == null) {
                     throw new ParserException("unclosed delimeter: " + first, first);
                 } else if (Delimeter.isClose(next)) {
