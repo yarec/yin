@@ -3,7 +3,7 @@ package org.yinwang.yin.parser;
 
 import org.jetbrains.annotations.Nullable;
 import org.yinwang.yin.Constants;
-import org.yinwang.yin._;
+import org.yinwang.yin.Util;
 import org.yinwang.yin.ast.*;
 
 import java.util.ArrayList;
@@ -26,14 +26,14 @@ public class Lexer {
 
 
     public Lexer(String file) {
-        this.file = _.unifyPath(file);
-        this.text = _.readFile(file);
+        this.file = Util.unifyPath(file);
+        this.text = Util.readFile(file);
         this.offset = 0;
         this.line = 0;
         this.col = 0;
 
         if (text == null) {
-            _.abort("failed to read file: " + file);
+            Util.abort("failed to read file: " + file);
         }
 
         Delimeter.addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
@@ -250,9 +250,9 @@ public class Lexer {
             tokens.add(n);
             n = lex.nextToken();
         }
-        _.msg("lexer result: ");
+        Util.msg("lexer result: ");
         for (Node node : tokens) {
-            _.msg(node.toString());
+            Util.msg(node.toString());
         }
     }
 }

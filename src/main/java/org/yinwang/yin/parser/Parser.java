@@ -2,7 +2,7 @@ package org.yinwang.yin.parser;
 
 import org.yinwang.yin.Constants;
 import org.yinwang.yin.Scope;
-import org.yinwang.yin._;
+import org.yinwang.yin.Util;
 import org.yinwang.yin.ast.*;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Parser {
 
             // (...) form must be non-empty
             if (elements.isEmpty()) {
-                _.abort(tuple, "syntax error");
+                Util.abort(tuple, "syntax error");
             }
 
             Node keyNode = elements.get(0);
@@ -81,7 +81,7 @@ public class Parser {
                         return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        _.abort(tuple, "incorrect format of if");
+                        Util.abort(tuple, "incorrect format of if");
                     }
                 }
 
@@ -93,7 +93,7 @@ public class Parser {
                         return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        _.abort(tuple, "incorrect format of definition");
+                        Util.abort(tuple, "incorrect format of definition");
                     }
                 }
 
@@ -105,14 +105,14 @@ public class Parser {
                         return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        _.abort(tuple, "incorrect format of definition");
+                        Util.abort(tuple, "incorrect format of definition");
                     }
                 }
 
                 // -------------------- declare --------------------
                 if (keyword.equals(Constants.DECLARE_KEYWORD)) {
                     if (elements.size() < 2) {
-                        _.abort(tuple, "syntax error in record type definition");
+                        Util.abort(tuple, "syntax error in record type definition");
                     }
                     Scope properties = parseProperties(elements.subList(1, elements.size()));
                     return new Declare(properties, prenode.file,
@@ -122,13 +122,13 @@ public class Parser {
                 // -------------------- anonymous function --------------------
                 if (keyword.equals(Constants.FUN_KEYWORD)) {
                     if (elements.size() < 3) {
-                        _.abort(tuple, "syntax error in function definition");
+                        Util.abort(tuple, "syntax error in function definition");
                     }
 
                     // construct parameter list
                     Node preParams = elements.get(1);
                     if (!(preParams instanceof Tuple)) {
-                        _.abort(preParams, "incorrect format of parameters: " + preParams);
+                        Util.abort(preParams, "incorrect format of parameters: " + preParams);
                     }
 
                     // parse the parameters, test whether it's all names or all tuples
@@ -145,10 +145,10 @@ public class Parser {
                             hasTuple = true;
                             List<Node> argElements = ((Tuple) p).elements;
                             if (argElements.size() == 0) {
-                                _.abort(p, "illegal argument format: " + p);
+                                Util.abort(p, "illegal argument format: " + p);
                             }
                             if (!(argElements.get(0) instanceof Name)) {
-                                _.abort(p, "illegal argument name : " + argElements.get(0));
+                                Util.abort(p, "illegal argument name : " + argElements.get(0));
                             }
 
                             Name name = (Name) argElements.get(0);
@@ -160,7 +160,7 @@ public class Parser {
                     }
 
                     if (hasName && hasTuple) {
-                        _.abort(preParams, "parameters must be either all names or all tuples: " + preParams);
+                        Util.abort(preParams, "parameters must be either all names or all tuples: " + preParams);
                         return null;
                     }
 
@@ -184,7 +184,7 @@ public class Parser {
                 // -------------------- record type definition --------------------
                 if (keyword.equals(Constants.RECORD_KEYWORD)) {
                     if (elements.size() < 2) {
-                        _.abort(tuple, "syntax error in record type definition");
+                        Util.abort(tuple, "syntax error in record type definition");
                     }
 
                     Node name = elements.get(1);
@@ -194,7 +194,7 @@ public class Parser {
                     List<Node> fields;
 
                     if (!(name instanceof Name)) {
-                        _.abort(name, "syntax error in record name: " + name);
+                        Util.abort(name, "syntax error in record name: " + name);
                         return null;
                     }
 
@@ -206,7 +206,7 @@ public class Parser {
                         parents = new ArrayList<>();
                         for (Node p : parentNodes) {
                             if (!(p instanceof Name)) {
-                                _.abort(p, "parents can only be names");
+                                Util.abort(p, "parents can only be names");
                             }
                             parents.add((Name) p);
                         }
@@ -248,7 +248,7 @@ public class Parser {
     public static Map<String, Node> parseMap(List<Node> prenodes) {
         Map<String, Node> ret = new LinkedHashMap<>();
         if (prenodes.size() % 2 != 0) {
-            _.abort("must be of the form (:key1 value1 :key2 value2), but got: " + prenodes);
+            Util.abort("must be of the form (:key1 value1 :key2 value2), but got: " + prenodes);
             return null;
         }
 
@@ -256,7 +256,7 @@ public class Parser {
             Node key = prenodes.get(i);
             Node value = prenodes.get(i + 1);
             if (!(key instanceof Keyword)) {
-                _.abort(key, "key must be a keyword, but got: " + key);
+                Util.abort(key, "key must be a keyword, but got: " + key);
             }
             ret.put(((Keyword) key).id, value);
         }
@@ -272,16 +272,16 @@ public class Parser {
             {
                 List<Node> elements = parseList(((Tuple) field).elements);
                 if (elements.size() < 2) {
-                    _.abort(field, "empty record slot not allowed");
+                    Util.abort(field, "empty record slot not allowed");
                 }
 
                 Node nameNode = elements.get(0);
                 if (!(nameNode instanceof Name)) {
-                    _.abort(nameNode, "expect field name, but got: " + nameNode);
+                    Util.abort(nameNode, "expect field name, but got: " + nameNode);
                 }
                 String id = ((Name) nameNode).id;
                 if (properties.containsKey(id)) {
-                    _.abort(nameNode, "duplicated field name: " + nameNode);
+                    Util.abort(nameNode, "duplicated field name: " + nameNode);
                 }
 
                 Node typeNode = elements.get(1);
@@ -308,7 +308,7 @@ public class Parser {
             if (elements.size() >= 1) {
                 Node grouped = elements.get(0);
                 if (delimType(grouped, Constants.ATTRIBUTE_ACCESS)) {
-                    _.abort(grouped, "illegal keyword: " + grouped);
+                    Util.abort(grouped, "illegal keyword: " + grouped);
                 }
                 grouped = groupAttr(grouped);
 
@@ -316,12 +316,12 @@ public class Parser {
                     Node node1 = elements.get(i);
                     if (delimType(node1, Constants.ATTRIBUTE_ACCESS)) {
                         if (i + 1 >= elements.size()) {
-                            _.abort(node1, "illegal position for .");
+                            Util.abort(node1, "illegal position for .");
                         }
                         Node node2 = elements.get(i + 1);
                         if (delimType(node1, Constants.ATTRIBUTE_ACCESS)) {
                             if (!(node2 instanceof Name)) {
-                                _.abort(node2, "attribute is not a name");
+                                Util.abort(node2, "attribute is not a name");
                             }
                             grouped = new Attr(grouped, (Name) node2, grouped.file,
                                     grouped.start, node2.end, grouped.line, grouped.col);
@@ -348,7 +348,7 @@ public class Parser {
 
     public static void main(String[] args) throws ParserException {
         Node tree = Parser.parse(args[0]);
-        _.msg(tree.toString());
+        Util.msg(tree.toString());
     }
 
 }

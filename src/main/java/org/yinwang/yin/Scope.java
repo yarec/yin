@@ -53,7 +53,7 @@ public class Scope {
         } else if (v instanceof Value) {
             return (Value) v;
         } else {
-            _.abort("value is not a Value, shouldn't happen: " + v);
+            Util.abort("value is not a Value, shouldn't happen: " + v);
             return null;
         }
     }
@@ -66,7 +66,7 @@ public class Scope {
         } else if (v instanceof Value) {
             return (Value) v;
         } else {
-            _.abort("value is not a Value, shouldn't happen: " + v);
+            Util.abort("value is not a Value, shouldn't happen: " + v);
             return null;
         }
     }
@@ -79,7 +79,7 @@ public class Scope {
         } else if (v instanceof Value) {
             return (Value) v;
         } else {
-            _.abort("value is not a Value, shouldn't happen: " + v);
+            Util.abort("value is not a Value, shouldn't happen: " + v);
             return null;
         }
     }
@@ -92,7 +92,7 @@ public class Scope {
         } else if (v instanceof Value) {
             return (Value) v;
         } else {
-            _.abort("value is not a Value, shouldn't happen: " + v);
+            Util.abort("value is not a Value, shouldn't happen: " + v);
             return null;
         }
     }

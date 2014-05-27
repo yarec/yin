@@ -1,7 +1,7 @@
 package org.yinwang.yin.parser;
 
 import org.yinwang.yin.Constants;
-import org.yinwang.yin._;
+import org.yinwang.yin.Util;
 import org.yinwang.yin.ast.Delimeter;
 import org.yinwang.yin.ast.Name;
 import org.yinwang.yin.ast.Node;
@@ -23,7 +23,7 @@ public class PreParser {
 
 
     public PreParser(String file) {
-        this.file = _.unifyPath(file);
+        this.file = Util.unifyPath(file);
         this.lexer = new Lexer(file);
     }
 
@@ -102,7 +102,7 @@ public class PreParser {
 
     public static void main(String[] args) throws ParserException {
         PreParser p = new PreParser(args[0]);
-        _.msg("preparser result: " + p.parse());
+        Util.msg("preparser result: " + p.parse());
     }
 
 }

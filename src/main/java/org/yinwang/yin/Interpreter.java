@@ -21,7 +21,7 @@ public class Interpreter {
         try {
             program = Parser.parse(file);
         } catch (ParserException e) {
-            _.abort("parsing error: " + e);
+            Util.abort("parsing error: " + e);
             return null;
         }
         return program.interp(Scope.buildInitScope());
@@ -30,7 +30,7 @@ public class Interpreter {
 
     public static void main(String[] args) {
         Interpreter i = new Interpreter(args[0]);
-        _.msg(i.interp(args[0]).toString());
+        Util.msg(i.interp(args[0]).toString());
     }
 
 }
