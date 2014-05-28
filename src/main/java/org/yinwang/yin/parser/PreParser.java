@@ -84,17 +84,20 @@ public class PreParser {
         List<Node> elements = new ArrayList<>();
         elements.add(Name.genName(Constants.SEQ_KEYWORD));      // synthetic block keyword
 
+        Node s = nextNode();
+        Node first = s;
         Node last = null;
-        for (Node s = nextNode(); s != null; s = nextNode()) {
+        for (; s != null; last = s, s = nextNode()) {
             elements.add(s);
-            last = s;
         }
 
         return new Tuple(
                 elements,
                 Name.genName(Constants.PAREN_BEGIN),
                 Name.genName(Constants.PAREN_END),
-                file, 0, last == null ? 0 : last.end,
+                file,
+                first == null ? 0 : first.start,
+                last == null ? 0 : last.end,
                 0, 0
         );
     }
