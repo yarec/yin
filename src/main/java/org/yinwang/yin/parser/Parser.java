@@ -26,7 +26,7 @@ public class Parser {
     }
 
 
-    public static Node parseNode(Node prenode) {
+    public static Node parseNode(Node prenode) throws ParserException {
 
         // initial program is in a block
         if (prenode instanceof Block) {
@@ -58,7 +58,7 @@ public class Parser {
 
             // (...) form must be non-empty
             if (elements.isEmpty()) {
-                Util.abort(tuple, "syntax error");
+                throw new ParserException("syntax error", tuple);
             }
 
             Node keyNode = elements.get(0);
@@ -235,7 +235,7 @@ public class Parser {
     }
 
 
-    public static List<Node> parseList(List<Node> prenodes) {
+    public static List<Node> parseList(List<Node> prenodes) throws ParserException {
         List<Node> parsed = new ArrayList<>();
         for (Node s : prenodes) {
             parsed.add(parseNode(s));
@@ -264,7 +264,7 @@ public class Parser {
     }
 
 
-    public static Scope parseProperties(List<Node> fields) {
+    public static Scope parseProperties(List<Node> fields) throws ParserException {
         Scope properties = new Scope();
         for (Node field : fields) {
             if (field instanceof Tuple &&
@@ -299,7 +299,7 @@ public class Parser {
     }
 
 
-    public static Node groupAttr(Node prenode) {
+    public static Node groupAttr(Node prenode) throws ParserException {
         if (prenode instanceof Tuple) {
             Tuple t = (Tuple) prenode;
             List<Node> elements = t.elements;
@@ -308,7 +308,7 @@ public class Parser {
             if (elements.size() >= 1) {
                 Node grouped = elements.get(0);
                 if (delimType(grouped, Constants.ATTRIBUTE_ACCESS)) {
-                    Util.abort(grouped, "illegal keyword: " + grouped);
+                    throw new ParserException("illegal keyword: " + grouped.toString(), grouped);
                 }
                 grouped = groupAttr(grouped);
 
@@ -316,12 +316,12 @@ public class Parser {
                     Node node1 = elements.get(i);
                     if (delimType(node1, Constants.ATTRIBUTE_ACCESS)) {
                         if (i + 1 >= elements.size()) {
-                            Util.abort(node1, "illegal position for .");
+                            throw new ParserException("illegal position for .", node1);
                         }
                         Node node2 = elements.get(i + 1);
                         if (delimType(node1, Constants.ATTRIBUTE_ACCESS)) {
                             if (!(node2 instanceof Name)) {
-                                Util.abort(node2, "attribute is not a name");
+                                throw new ParserException("attribute is not a name: " + node2.toString(), node2);
                             }
                             grouped = new Attr(grouped, (Name) node2, grouped.file,
                                     grouped.start, node2.end, grouped.line, grouped.col);
