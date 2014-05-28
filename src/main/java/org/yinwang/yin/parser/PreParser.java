@@ -57,7 +57,7 @@ public class PreParser {
                  next = nextNode1(depth + 1))
             {
                 if (next == null) {
-                    throw new ParserException("unclosed delimeter: " + first.toString(), first);
+                    throw new ParserException("unclosed delimeter till end of file: " + first.toString(), first);
                 } else if (Delimeter.isClose(next)) {
                     throw new ParserException("unmatched closing delimeter: " +
                             next.toString() + " does not close " + first.toString(), next);
