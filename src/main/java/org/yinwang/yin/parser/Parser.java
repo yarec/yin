@@ -80,7 +80,7 @@ public class Parser {
                         return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        Util.abort(tuple, "incorrect format of if");
+                        throw new ParserException("incorrect format of if", tuple);
                     }
                 }
 
@@ -92,7 +92,7 @@ public class Parser {
                         return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        Util.abort(tuple, "incorrect format of definition");
+                        throw new ParserException("incorrect format of definition", tuple);
                     }
                 }
 
@@ -104,14 +104,14 @@ public class Parser {
                         return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
                                 prenode.col);
                     } else {
-                        Util.abort(tuple, "incorrect format of definition");
+                        throw new ParserException("incorrect format of definition", tuple);
                     }
                 }
 
                 // -------------------- declare --------------------
                 if (keyword.equals(Constants.DECLARE_KEYWORD)) {
                     if (elements.size() < 2) {
-                        Util.abort(tuple, "syntax error in record type definition");
+                        throw new ParserException("syntax error in record type definition", tuple);
                     }
                     Scope properties = parseProperties(elements.subList(1, elements.size()));
                     return new Declare(properties, prenode.file,
@@ -121,13 +121,13 @@ public class Parser {
                 // -------------------- anonymous function --------------------
                 if (keyword.equals(Constants.FUN_KEYWORD)) {
                     if (elements.size() < 3) {
-                        Util.abort(tuple, "syntax error in function definition");
+                        throw new ParserException("syntax error in function definition", tuple);
                     }
 
                     // construct parameter list
                     Node preParams = elements.get(1);
                     if (!(preParams instanceof Tuple)) {
-                        Util.abort(preParams, "incorrect format of parameters: " + preParams);
+                        throw new ParserException("incorrect format of parameters: " + preParams.toString(), preParams);
                     }
 
                     // parse the parameters, test whether it's all names or all tuples
@@ -144,10 +144,10 @@ public class Parser {
                             hasTuple = true;
                             List<Node> argElements = ((Tuple) p).elements;
                             if (argElements.size() == 0) {
-                                Util.abort(p, "illegal argument format: " + p);
+                                throw new ParserException("illegal argument format: " + p.toString(), p);
                             }
                             if (!(argElements.get(0) instanceof Name)) {
-                                Util.abort(p, "illegal argument name : " + argElements.get(0));
+                                throw new ParserException("illegal argument name : " + argElements.get(0), p);
                             }
 
                             Name name = (Name) argElements.get(0);
@@ -159,8 +159,8 @@ public class Parser {
                     }
 
                     if (hasName && hasTuple) {
-                        Util.abort(preParams, "parameters must be either all names or all tuples: " + preParams);
-                        return null;
+                        throw new ParserException("parameters must be either all names or all tuples: " +
+                                preParams.toString(), preParams);
                     }
 
                     Scope properties;
@@ -183,7 +183,7 @@ public class Parser {
                 // -------------------- record type definition --------------------
                 if (keyword.equals(Constants.RECORD_KEYWORD)) {
                     if (elements.size() < 2) {
-                        Util.abort(tuple, "syntax error in record type definition");
+                        throw new ParserException("syntax error in record type definition", tuple);
                     }
 
                     Node name = elements.get(1);
@@ -193,8 +193,7 @@ public class Parser {
                     List<Node> fields;
 
                     if (!(name instanceof Name)) {
-                        Util.abort(name, "syntax error in record name: " + name);
-                        return null;
+                        throw new ParserException("syntax error in record name: " + name.toString(), name);
                     }
 
                     // check if there are parents (record A (B C) ...)
@@ -205,7 +204,7 @@ public class Parser {
                         parents = new ArrayList<>();
                         for (Node p : parentNodes) {
                             if (!(p instanceof Name)) {
-                                Util.abort(p, "parents can only be names");
+                                throw new ParserException("parents can only be names", p);
                             }
                             parents.add((Name) p);
                         }
@@ -244,18 +243,18 @@ public class Parser {
 
 
     // treat the list of nodes as key-value pairs like (:x 1 :y 2)
-    public static Map<String, Node> parseMap(List<Node> prenodes) {
+    public static Map<String, Node> parseMap(List<Node> prenodes) throws ParserException {
         Map<String, Node> ret = new LinkedHashMap<>();
         if (prenodes.size() % 2 != 0) {
-            Util.abort("must be of the form (:key1 value1 :key2 value2), but got: " + prenodes);
-            return null;
+            throw new ParserException("must be of the form (:key1 value1 :key2 value2), but got: " +
+                    prenodes.toString(), null);
         }
 
         for (int i = 0; i < prenodes.size(); i += 2) {
             Node key = prenodes.get(i);
             Node value = prenodes.get(i + 1);
             if (!(key instanceof Keyword)) {
-                Util.abort(key, "key must be a keyword, but got: " + key);
+                throw new ParserException("key must be a keyword, but got: " + key, key);
             }
             ret.put(((Keyword) key).id, value);
         }
@@ -271,16 +270,16 @@ public class Parser {
             {
                 List<Node> elements = parseList(((Tuple) field).elements);
                 if (elements.size() < 2) {
-                    Util.abort(field, "empty record slot not allowed");
+                    throw new ParserException("empty record slot not allowed", field);
                 }
 
                 Node nameNode = elements.get(0);
                 if (!(nameNode instanceof Name)) {
-                    Util.abort(nameNode, "expect field name, but got: " + nameNode);
+                    throw new ParserException("expect field name, but got: " + nameNode.toString(), nameNode);
                 }
                 String id = ((Name) nameNode).id;
                 if (properties.containsKey(id)) {
-                    Util.abort(nameNode, "duplicated field name: " + nameNode);
+                    throw new ParserException("duplicated field name: " + nameNode.toString(), nameNode);
                 }
 
                 Node typeNode = elements.get(1);
