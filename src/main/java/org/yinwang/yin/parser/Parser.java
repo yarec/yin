@@ -75,39 +75,33 @@ public class Parser {
 
             // -------------------- if --------------------
             if (keyword.equals(Constants.IF_KEYWORD)) {
-                if (elements.size() == 4) {
-                    Node test = parseNode(elements.get(1));
-                    Node conseq = parseNode(elements.get(2));
-                    Node alter = parseNode(elements.get(3));
-                    return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
-                            prenode.col);
-                } else {
+                if (elements.size() != 4) {
                     throw new ParserException("incorrect format of if", tuple);
                 }
+                Node test = parseNode(elements.get(1));
+                Node conseq = parseNode(elements.get(2));
+                Node alter = parseNode(elements.get(3));
+                return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
             }
 
             // -------------------- definition --------------------
             if (keyword.equals(Constants.DEF_KEYWORD)) {
-                if (elements.size() == 3) {
-                    Node pattern = parseNode(elements.get(1));
-                    Node value = parseNode(elements.get(2));
-                    return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
-                            prenode.col);
-                } else {
+                if (elements.size() != 3) {
                     throw new ParserException("incorrect format of definition", tuple);
                 }
+                Node pattern = parseNode(elements.get(1));
+                Node value = parseNode(elements.get(2));
+                return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
             }
 
             // -------------------- assignment --------------------
             if (keyword.equals(Constants.ASSIGN_KEYWORD)) {
-                if (elements.size() == 3) {
-                    Node pattern = parseNode(elements.get(1));
-                    Node value = parseNode(elements.get(2));
-                    return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
-                            prenode.col);
-                } else {
+                if (elements.size() != 3) {
                     throw new ParserException("incorrect format of definition", tuple);
                 }
+                Node pattern = parseNode(elements.get(1));
+                Node value = parseNode(elements.get(2));
+                return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
             }
 
             // -------------------- declare --------------------
