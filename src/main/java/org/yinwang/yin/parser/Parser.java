@@ -38,198 +38,196 @@ public class Parser {
             return new Attr(parseNode(a.value), a.attr, a.file, a.start, a.end, a.line, a.col);
         }
 
-        // most structures are encoded in a tuple
-        // (if t c a) (+ 1 2) (f x y) ...
-        // decode them by their first map
-        if (prenode instanceof Tuple) {
-            Tuple tuple = ((Tuple) prenode);
-            List<Node> elements = tuple.elements;
-
-            if (delimType(tuple.open, Constants.CURLY_BEGIN)) {
-                return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
-                        tuple.col);
-            }
-
-            if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
-                return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line,
-                        tuple.col);
-            }
-
-            // (...) form must be non-empty
-            if (elements.isEmpty()) {
-                throw new ParserException("syntax error", tuple);
-            }
-
-            Node keyNode = elements.get(0);
-
-            if (keyNode instanceof Name) {
-                String keyword = ((Name) keyNode).id;
-
-                // -------------------- sequence --------------------
-                if (keyword.equals(Constants.SEQ_KEYWORD)) {
-                    List<Node> statements = parseList(elements.subList(1, elements.size()));
-                    return new Block(statements, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
-                }
-
-                // -------------------- if --------------------
-                if (keyword.equals(Constants.IF_KEYWORD)) {
-                    if (elements.size() == 4) {
-                        Node test = parseNode(elements.get(1));
-                        Node conseq = parseNode(elements.get(2));
-                        Node alter = parseNode(elements.get(3));
-                        return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
-                                prenode.col);
-                    } else {
-                        throw new ParserException("incorrect format of if", tuple);
-                    }
-                }
-
-                // -------------------- definition --------------------
-                if (keyword.equals(Constants.DEF_KEYWORD)) {
-                    if (elements.size() == 3) {
-                        Node pattern = parseNode(elements.get(1));
-                        Node value = parseNode(elements.get(2));
-                        return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
-                                prenode.col);
-                    } else {
-                        throw new ParserException("incorrect format of definition", tuple);
-                    }
-                }
-
-                // -------------------- assignment --------------------
-                if (keyword.equals(Constants.ASSIGN_KEYWORD)) {
-                    if (elements.size() == 3) {
-                        Node pattern = parseNode(elements.get(1));
-                        Node value = parseNode(elements.get(2));
-                        return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
-                                prenode.col);
-                    } else {
-                        throw new ParserException("incorrect format of definition", tuple);
-                    }
-                }
-
-                // -------------------- declare --------------------
-                if (keyword.equals(Constants.DECLARE_KEYWORD)) {
-                    if (elements.size() < 2) {
-                        throw new ParserException("syntax error in record type definition", tuple);
-                    }
-                    Scope properties = parseProperties(elements.subList(1, elements.size()));
-                    return new Declare(properties, prenode.file,
-                            prenode.start, prenode.end, prenode.line, prenode.col);
-                }
-
-                // -------------------- anonymous function --------------------
-                if (keyword.equals(Constants.FUN_KEYWORD)) {
-                    if (elements.size() < 3) {
-                        throw new ParserException("syntax error in function definition", tuple);
-                    }
-
-                    // construct parameter list
-                    Node preParams = elements.get(1);
-                    if (!(preParams instanceof Tuple)) {
-                        throw new ParserException("incorrect format of parameters: " + preParams.toString(), preParams);
-                    }
-
-                    // parse the parameters, test whether it's all names or all tuples
-                    boolean hasName = false;
-                    boolean hasTuple = false;
-                    List<Name> paramNames = new ArrayList<>();
-                    List<Node> paramTuples = new ArrayList<>();
-
-                    for (Node p : ((Tuple) preParams).elements) {
-                        if (p instanceof Name) {
-                            hasName = true;
-                            paramNames.add((Name) p);
-                        } else if (p instanceof Tuple) {
-                            hasTuple = true;
-                            List<Node> argElements = ((Tuple) p).elements;
-                            if (argElements.size() == 0) {
-                                throw new ParserException("illegal argument format: " + p.toString(), p);
-                            }
-                            if (!(argElements.get(0) instanceof Name)) {
-                                throw new ParserException("illegal argument name : " + argElements.get(0), p);
-                            }
-
-                            Name name = (Name) argElements.get(0);
-                            if (!name.id.equals(Constants.RETURN_ARROW)) {
-                                paramNames.add(name);
-                            }
-                            paramTuples.add(p);
-                        }
-                    }
-
-                    if (hasName && hasTuple) {
-                        throw new ParserException("parameters must be either all names or all tuples: " +
-                                preParams.toString(), preParams);
-                    }
-
-                    Scope properties;
-                    if (hasTuple) {
-                        properties = parseProperties(paramTuples);
-                    } else {
-                        properties = null;
-                    }
-
-                    // construct body
-                    List<Node> statements = parseList(elements.subList(2, elements.size()));
-                    int start = statements.get(0).start;
-                    int end = statements.get(statements.size() - 1).end;
-                    Node body = new Block(statements, prenode.file, start, end, prenode.line, prenode.col);
-
-                    return new Fun(paramNames, properties, body,
-                            prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
-                }
-
-                // -------------------- record type definition --------------------
-                if (keyword.equals(Constants.RECORD_KEYWORD)) {
-                    if (elements.size() < 2) {
-                        throw new ParserException("syntax error in record type definition", tuple);
-                    }
-
-                    Node name = elements.get(1);
-                    Node maybeParents = elements.get(2);
-
-                    List<Name> parents;
-                    List<Node> fields;
-
-                    if (!(name instanceof Name)) {
-                        throw new ParserException("syntax error in record name: " + name.toString(), name);
-                    }
-
-                    // check if there are parents (record A (B C) ...)
-                    if (maybeParents instanceof Tuple &&
-                            delimType(((Tuple) maybeParents).open, Constants.PAREN_BEGIN))
-                    {
-                        List<Node> parentNodes = ((Tuple) maybeParents).elements;
-                        parents = new ArrayList<>();
-                        for (Node p : parentNodes) {
-                            if (!(p instanceof Name)) {
-                                throw new ParserException("parents can only be names", p);
-                            }
-                            parents.add((Name) p);
-                        }
-                        fields = elements.subList(3, elements.size());
-                    } else {
-                        parents = null;
-                        fields = elements.subList(2, elements.size());
-                    }
-
-                    Scope properties = parseProperties(fields);
-                    return new RecordDef((Name) name, parents, properties, prenode.file,
-                            prenode.start, prenode.end, prenode.line, prenode.col);
-                }
-            }
-
-            // -------------------- application --------------------
-            // must go after others because it has no keywords
-            Node func = parseNode(elements.get(0));
-            List<Node> parsedArgs = parseList(elements.subList(1, elements.size()));
-            Argument args = new Argument(parsedArgs);
-            return new Call(func, args, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+        if (!(prenode instanceof Tuple)) {
+            // defaut return the node untouched
+            return prenode;
         }
 
-        // defaut return the node untouched
-        return prenode;
+        // following: actually do something
+        Tuple tuple = ((Tuple) prenode);
+        List<Node> elements = tuple.elements;
+
+        if (delimType(tuple.open, Constants.CURLY_BEGIN)) {
+            return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end,
+                    tuple.line, tuple.col);
+        }
+
+        if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
+            return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end,
+                    tuple.line, tuple.col);
+        }
+
+        // (...) form must be non-empty
+        if (elements.isEmpty()) {
+            throw new ParserException("syntax error", tuple);
+        }
+
+        Node keyNode = elements.get(0);
+
+        if (keyNode instanceof Name) {
+            String keyword = ((Name) keyNode).id;
+
+            // -------------------- sequence --------------------
+            if (keyword.equals(Constants.SEQ_KEYWORD)) {
+                List<Node> statements = parseList(elements.subList(1, elements.size()));
+                return new Block(statements, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+            }
+
+            // -------------------- if --------------------
+            if (keyword.equals(Constants.IF_KEYWORD)) {
+                if (elements.size() == 4) {
+                    Node test = parseNode(elements.get(1));
+                    Node conseq = parseNode(elements.get(2));
+                    Node alter = parseNode(elements.get(3));
+                    return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line,
+                            prenode.col);
+                } else {
+                    throw new ParserException("incorrect format of if", tuple);
+                }
+            }
+
+            // -------------------- definition --------------------
+            if (keyword.equals(Constants.DEF_KEYWORD)) {
+                if (elements.size() == 3) {
+                    Node pattern = parseNode(elements.get(1));
+                    Node value = parseNode(elements.get(2));
+                    return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
+                            prenode.col);
+                } else {
+                    throw new ParserException("incorrect format of definition", tuple);
+                }
+            }
+
+            // -------------------- assignment --------------------
+            if (keyword.equals(Constants.ASSIGN_KEYWORD)) {
+                if (elements.size() == 3) {
+                    Node pattern = parseNode(elements.get(1));
+                    Node value = parseNode(elements.get(2));
+                    return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line,
+                            prenode.col);
+                } else {
+                    throw new ParserException("incorrect format of definition", tuple);
+                }
+            }
+
+            // -------------------- declare --------------------
+            if (keyword.equals(Constants.DECLARE_KEYWORD)) {
+                if (elements.size() < 2) {
+                    throw new ParserException("syntax error in record type definition", tuple);
+                }
+                Scope properties = parseProperties(elements.subList(1, elements.size()));
+                return new Declare(properties, prenode.file,
+                        prenode.start, prenode.end, prenode.line, prenode.col);
+            }
+
+            // -------------------- anonymous function --------------------
+            if (keyword.equals(Constants.FUN_KEYWORD)) {
+                if (elements.size() < 3) {
+                    throw new ParserException("syntax error in function definition", tuple);
+                }
+
+                // construct parameter list
+                Node preParams = elements.get(1);
+                if (!(preParams instanceof Tuple)) {
+                    throw new ParserException("incorrect format of parameters: " + preParams.toString(), preParams);
+                }
+
+                // parse the parameters, test whether it's all names or all tuples
+                boolean hasName = false;
+                boolean hasTuple = false;
+                List<Name> paramNames = new ArrayList<>();
+                List<Node> paramTuples = new ArrayList<>();
+
+                for (Node p : ((Tuple) preParams).elements) {
+                    if (p instanceof Name) {
+                        hasName = true;
+                        paramNames.add((Name) p);
+                    } else if (p instanceof Tuple) {
+                        hasTuple = true;
+                        List<Node> argElements = ((Tuple) p).elements;
+                        if (argElements.size() == 0) {
+                            throw new ParserException("illegal argument format: " + p.toString(), p);
+                        }
+                        if (!(argElements.get(0) instanceof Name)) {
+                            throw new ParserException("illegal argument name : " + argElements.get(0), p);
+                        }
+
+                        Name name = (Name) argElements.get(0);
+                        if (!name.id.equals(Constants.RETURN_ARROW)) {
+                            paramNames.add(name);
+                        }
+                        paramTuples.add(p);
+                    }
+                }
+
+                if (hasName && hasTuple) {
+                    throw new ParserException("parameters must be either all names or all tuples: " +
+                            preParams.toString(), preParams);
+                }
+
+                Scope properties;
+                if (hasTuple) {
+                    properties = parseProperties(paramTuples);
+                } else {
+                    properties = null;
+                }
+
+                // construct body
+                List<Node> statements = parseList(elements.subList(2, elements.size()));
+                int start = statements.get(0).start;
+                int end = statements.get(statements.size() - 1).end;
+                Node body = new Block(statements, prenode.file, start, end, prenode.line, prenode.col);
+
+                return new Fun(paramNames, properties, body,
+                        prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+            }
+
+            // -------------------- record type definition --------------------
+            if (keyword.equals(Constants.RECORD_KEYWORD)) {
+                if (elements.size() < 2) {
+                    throw new ParserException("syntax error in record type definition", tuple);
+                }
+
+                Node name = elements.get(1);
+                Node maybeParents = elements.get(2);
+
+                List<Name> parents;
+                List<Node> fields;
+
+                if (!(name instanceof Name)) {
+                    throw new ParserException("syntax error in record name: " + name.toString(), name);
+                }
+
+                // check if there are parents (record A (B C) ...)
+                if (maybeParents instanceof Tuple &&
+                        delimType(((Tuple) maybeParents).open, Constants.PAREN_BEGIN))
+                {
+                    List<Node> parentNodes = ((Tuple) maybeParents).elements;
+                    parents = new ArrayList<>();
+                    for (Node p : parentNodes) {
+                        if (!(p instanceof Name)) {
+                            throw new ParserException("parents can only be names", p);
+                        }
+                        parents.add((Name) p);
+                    }
+                    fields = elements.subList(3, elements.size());
+                } else {
+                    parents = null;
+                    fields = elements.subList(2, elements.size());
+                }
+
+                Scope properties = parseProperties(fields);
+                return new RecordDef((Name) name, parents, properties, prenode.file,
+                        prenode.start, prenode.end, prenode.line, prenode.col);
+            }
+        }
+
+        // -------------------- application --------------------
+        // must go after others because it has no keywords
+        Node func = parseNode(elements.get(0));
+        List<Node> parsedArgs = parseList(elements.subList(1, elements.size()));
+        Argument args = new Argument(parsedArgs);
+        return new Call(func, args, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
     }
 
 
