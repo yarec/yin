@@ -43,8 +43,7 @@ public class Parser {
         List<Node> elements = tuple.elements;
 
         if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
-            return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end,
-                    tuple.line, tuple.col);
+            return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
         }
 
         // (...) form must be non-empty
