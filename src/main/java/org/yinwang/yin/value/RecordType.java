@@ -39,7 +39,7 @@ public class RecordType extends Value {
                     sb.append(" :" + key + " " + value);
                 }
             }
-            sb.append(Constants.ARRAY_END);
+            sb.append(Constants.SQUARE_END);
         }
 
         sb.append(Constants.PAREN_END);

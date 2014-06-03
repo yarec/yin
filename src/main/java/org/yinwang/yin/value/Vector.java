@@ -38,7 +38,7 @@ public class Vector extends Value {
             first = false;
         }
 
-        sb.append(Constants.ARRAY_END);
+        sb.append(Constants.SQUARE_END);
         return sb.toString();
     }
 

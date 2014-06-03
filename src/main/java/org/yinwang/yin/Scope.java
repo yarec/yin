@@ -244,7 +244,7 @@ public class Scope {
             for (Map.Entry<String, Object> e : table.get(name).entrySet()) {
                 sb.append(":" + e.getKey() + " " + e.getValue());
             }
-            sb.append(Constants.ARRAY_END);
+            sb.append(Constants.SQUARE_END);
         }
         return sb.toString();
     }

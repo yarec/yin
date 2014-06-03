@@ -29,7 +29,7 @@ public class RecordValue extends Value {
             sb.append(" ").append(Constants.SQUARE_BEGIN);
             sb.append(field).append(" ");
             sb.append(properties.lookupLocal(field));
-            sb.append(Constants.ARRAY_END);
+            sb.append(Constants.SQUARE_END);
         }
 
         sb.append(Constants.PAREN_END);
