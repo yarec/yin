@@ -162,47 +162,53 @@ public class Parser {
 
             // -------------------- record type definition --------------------
             if (keyword.equals(Constants.RECORD_KEYWORD)) {
-                if (elements.size() < 2) {
-                    throw new ParserException("syntax error in record type definition", tuple);
-                }
-
-                Node name = elements.get(1);
-                Node maybeParents = elements.get(2);
-
-                List<Name> parents;
-                List<Node> fields;
-
-                if (!(name instanceof Name)) {
-                    throw new ParserException("syntax error in record name: " + name.toString(), name);
-                }
-
-                // check if there are parents (record A (B C) ...)
-                if (maybeParents instanceof Tuple &&
-                        delimType(((Tuple) maybeParents).open, Constants.PAREN_BEGIN))
-                {
-                    List<Node> parentNodes = ((Tuple) maybeParents).elements;
-                    parents = new ArrayList<>();
-                    for (Node p : parentNodes) {
-                        if (!(p instanceof Name)) {
-                            throw new ParserException("parents can only be names", p);
-                        }
-                        parents.add((Name) p);
-                    }
-                    fields = elements.subList(3, elements.size());
-                } else {
-                    parents = null;
-                    fields = elements.subList(2, elements.size());
-                }
-
-                Scope properties = parseProperties(fields);
-                return new RecordDef((Name) name, parents, properties, prenode.file,
-                        prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseRecordDef(tuple);
             }
         }
 
         // -------------------- application --------------------
         // must go after others because it has no keywords
-        return parseCall((Tuple) prenode);
+        return parseCall(tuple);
+    }
+
+
+    public static RecordDef parseRecordDef(Tuple prenode) throws ParserException {
+        List<Node> elements = prenode.elements;
+        if (elements.size() < 2) {
+            throw new ParserException("syntax error in record type definition", prenode);
+        }
+
+        Node name = elements.get(1);
+        Node maybeParents = elements.get(2);
+
+        List<Name> parents;
+        List<Node> fields;
+
+        if (!(name instanceof Name)) {
+            throw new ParserException("syntax error in record name: " + name.toString(), name);
+        }
+
+        // check if there are parents (record A (B C) ...)
+        if (maybeParents instanceof Tuple &&
+                delimType(((Tuple) maybeParents).open, Constants.PAREN_BEGIN))
+        {
+            List<Node> parentNodes = ((Tuple) maybeParents).elements;
+            parents = new ArrayList<>();
+            for (Node p : parentNodes) {
+                if (!(p instanceof Name)) {
+                    throw new ParserException("parents can only be names", p);
+                }
+                parents.add((Name) p);
+            }
+            fields = elements.subList(3, elements.size());
+        } else {
+            parents = null;
+            fields = elements.subList(2, elements.size());
+        }
+
+        Scope properties = parseProperties(fields);
+        return new RecordDef((Name) name, parents, properties, prenode.file,
+                prenode.start, prenode.end, prenode.line, prenode.col);
     }
 
 
