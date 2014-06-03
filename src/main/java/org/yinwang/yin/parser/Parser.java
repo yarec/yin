@@ -179,10 +179,10 @@ public class Parser {
     }
 
 
-    public static RecordDef parseRecordDef(Tuple prenode) throws ParserException {
-        List<Node> elements = prenode.elements;
+    public static RecordDef parseRecordDef(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
         if (elements.size() < 2) {
-            throw new ParserException("syntax error in record type definition", prenode);
+            throw new ParserException("syntax error in record type definition", tuple);
         }
 
         Node name = elements.get(1);
@@ -214,17 +214,17 @@ public class Parser {
         }
 
         Scope properties = parseProperties(fields);
-        return new RecordDef((Name) name, parents, properties, prenode.file,
-                prenode.start, prenode.end, prenode.line, prenode.col);
+        return new RecordDef((Name) name, parents, properties, tuple.file,
+                tuple.start, tuple.end, tuple.line, tuple.col);
     }
 
 
-    public static Call parseCall(Tuple prenode) throws ParserException {
-        List<Node> elements = prenode.elements;
+    public static Call parseCall(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
         Node func = parseNode(elements.get(0));
         List<Node> parsedArgs = parseList(elements.subList(1, elements.size()));
         Argument args = new Argument(parsedArgs);
-        return new Call(func, args, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+        return new Call(func, args, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
     }
 
 
