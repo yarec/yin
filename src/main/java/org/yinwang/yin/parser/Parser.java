@@ -202,6 +202,12 @@ public class Parser {
 
         // -------------------- application --------------------
         // must go after others because it has no keywords
+        return parseCall((Tuple) prenode);
+    }
+
+
+    public static Call parseCall(Tuple prenode) throws ParserException {
+        List<Node> elements = prenode.elements;
         Node func = parseNode(elements.get(0));
         List<Node> parsedArgs = parseList(elements.subList(1, elements.size()));
         Argument args = new Argument(parsedArgs);
