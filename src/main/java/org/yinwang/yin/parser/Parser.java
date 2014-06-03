@@ -263,7 +263,7 @@ public class Parser {
             Node key = prenodes.get(i);
             Node value = prenodes.get(i + 1);
             if (!(key instanceof Keyword)) {
-                throw new ParserException("key must be a keyword, but got: " + key, key);
+                throw new ParserException("key must be a keyword, but got: " + key.toString(), key);
             }
             ret.put(((Keyword) key).id, value);
         }
@@ -279,16 +279,16 @@ public class Parser {
             {
                 List<Node> elements = parseList(((Tuple) field).elements);
                 if (elements.size() < 2) {
-                    throw new ParserException("empty record slot not allowed", field);
+                    throw new ParserException("empty slot not allowed", field);
                 }
 
                 Node nameNode = elements.get(0);
                 if (!(nameNode instanceof Name)) {
-                    throw new ParserException("expect field name, but got: " + nameNode.toString(), nameNode);
+                    throw new ParserException("expect a name, but got: " + nameNode.toString(), nameNode);
                 }
                 String id = ((Name) nameNode).id;
                 if (properties.containsKey(id)) {
-                    throw new ParserException("duplicated field name: " + nameNode.toString(), nameNode);
+                    throw new ParserException("duplicated name: " + nameNode.toString(), nameNode);
                 }
 
                 Node typeNode = elements.get(1);
@@ -300,6 +300,8 @@ public class Parser {
                     propsObj.put(e.getKey(), e.getValue());
                 }
                 properties.putProperties(((Name) nameNode).id, propsObj);
+            } else {
+                throw new ParserException("illegal form of descriptor: " + field.toString(), field);
             }
         }
         return properties;
