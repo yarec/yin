@@ -47,11 +47,6 @@ public class Parser {
         Tuple tuple = ((Tuple) prenode);
         List<Node> elements = tuple.elements;
 
-        if (delimType(tuple.open, Constants.CURLY_BEGIN)) {
-            return new RecordLiteral(parseList(elements), tuple.file, tuple.start, tuple.end,
-                    tuple.line, tuple.col);
-        }
-
         if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
             return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end,
                     tuple.line, tuple.col);
@@ -110,8 +105,7 @@ public class Parser {
                     throw new ParserException("syntax error in record type definition", tuple);
                 }
                 Scope properties = parseProperties(elements.subList(1, elements.size()));
-                return new Declare(properties, prenode.file,
-                        prenode.start, prenode.end, prenode.line, prenode.col);
+                return new Declare(properties, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
             }
 
             // -------------------- anonymous function --------------------
