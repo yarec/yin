@@ -256,7 +256,7 @@ public class Parser {
         Map<String, Node> ret = new LinkedHashMap<>();
         if (prenodes.size() % 2 != 0) {
             throw new ParserException("must be of the form (:key1 value1 :key2 value2), but got: " +
-                    prenodes.toString(), null);
+                    prenodes.toString(), prenodes.get(0));
         }
 
         for (int i = 0; i < prenodes.size(); i += 2) {
