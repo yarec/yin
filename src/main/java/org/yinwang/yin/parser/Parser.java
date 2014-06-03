@@ -33,13 +33,8 @@ public class Parser {
             return new Block(parsed, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
         }
 
-        if (prenode instanceof Attr) {
-            Attr a = (Attr) prenode;
-            return new Attr(parseNode(a.value), a.attr, a.file, a.start, a.end, a.line, a.col);
-        }
-
         if (!(prenode instanceof Tuple)) {
-            // defaut return the node untouched
+            // default return the node untouched
             return prenode;
         }
 
