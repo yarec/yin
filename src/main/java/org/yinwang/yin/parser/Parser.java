@@ -274,14 +274,13 @@ public class Parser {
     public static Scope parseProperties(List<Node> fields) throws ParserException {
         Scope properties = new Scope();
         for (Node field : fields) {
-            if (field instanceof Tuple &&
-                    delimType(((Tuple) field).open, Constants.SQUARE_BEGIN))
+            if (!(field instanceof Tuple &&
+                    delimType(((Tuple) field).open, Constants.SQUARE_BEGIN) &&
+                    ((Tuple) field).elements.size() >= 2))
             {
+                throw new ParserException("incorrect form of descriptor: " + field.toString(), field);
+            } else {
                 List<Node> elements = parseList(((Tuple) field).elements);
-                if (elements.size() < 2) {
-                    throw new ParserException("incorrect form of descriptor: " + field.toString(), field);
-                }
-
                 Node nameNode = elements.get(0);
                 if (!(nameNode instanceof Name)) {
                     throw new ParserException("expect a name, but got: " + nameNode.toString(), nameNode);
@@ -300,8 +299,6 @@ public class Parser {
                     propsObj.put(e.getKey(), e.getValue());
                 }
                 properties.putProperties(((Name) nameNode).id, propsObj);
-            } else {
-                throw new ParserException("incorrect form of descriptor: " + field.toString(), field);
             }
         }
         return properties;
