@@ -100,64 +100,7 @@ public class Parser {
 
             // -------------------- anonymous function --------------------
             if (keyword.equals(Constants.FUN_KEYWORD)) {
-                if (elements.size() < 3) {
-                    throw new ParserException("syntax error in function definition", tuple);
-                }
-
-                // construct parameter list
-                Node preParams = elements.get(1);
-                if (!(preParams instanceof Tuple)) {
-                    throw new ParserException("incorrect format of parameters: " + preParams.toString(), preParams);
-                }
-
-                // parse the parameters, test whether it's all names or all tuples
-                boolean hasName = false;
-                boolean hasTuple = false;
-                List<Name> paramNames = new ArrayList<>();
-                List<Node> paramTuples = new ArrayList<>();
-
-                for (Node p : ((Tuple) preParams).elements) {
-                    if (p instanceof Name) {
-                        hasName = true;
-                        paramNames.add((Name) p);
-                    } else if (p instanceof Tuple) {
-                        hasTuple = true;
-                        List<Node> argElements = ((Tuple) p).elements;
-                        if (argElements.size() == 0) {
-                            throw new ParserException("illegal argument format: " + p.toString(), p);
-                        }
-                        if (!(argElements.get(0) instanceof Name)) {
-                            throw new ParserException("illegal argument name : " + argElements.get(0), p);
-                        }
-
-                        Name name = (Name) argElements.get(0);
-                        if (!name.id.equals(Constants.RETURN_ARROW)) {
-                            paramNames.add(name);
-                        }
-                        paramTuples.add(p);
-                    }
-                }
-
-                if (hasName && hasTuple) {
-                    throw new ParserException("parameters must be either all names or all tuples: " +
-                            preParams.toString(), preParams);
-                }
-
-                Scope properties;
-                if (hasTuple) {
-                    properties = parseProperties(paramTuples);
-                } else {
-                    properties = null;
-                }
-
-                // construct body
-                List<Node> statements = parseList(elements.subList(2, elements.size()));
-                int start = statements.get(0).start;
-                int end = statements.get(statements.size() - 1).end;
-                Node body = new Block(statements, prenode.file, start, end, prenode.line, prenode.col);
-
-                return new Fun(paramNames, properties, body,
-                        prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseFun(tuple);
             }
 
             // -------------------- record type definition --------------------
@@ -169,6 +112,70 @@ public class Parser {
         // -------------------- application --------------------
         // must go after others because it has no keywords
         return parseCall(tuple);
+    }
+
+
+    public static Fun parseFun(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+
+        if (elements.size() < 3) {
+            throw new ParserException("syntax error in function definition", tuple);
+        }
+
+        // construct parameter list
+        Node preParams = elements.get(1);
+        if (!(preParams instanceof Tuple)) {
+            throw new ParserException("incorrect format of parameters: " + preParams.toString(), preParams);
+        }
+
+        // parse the parameters, test whether it's all names or all tuples
+        boolean hasName = false;
+        boolean hasTuple = false;
+        List<Name> paramNames = new ArrayList<>();
+        List<Node> paramTuples = new ArrayList<>();
+
+        for (Node p : ((Tuple) preParams).elements) {
+            if (p instanceof Name) {
+                hasName = true;
+                paramNames.add((Name) p);
+            } else if (p instanceof Tuple) {
+                hasTuple = true;
+                List<Node> argElements = ((Tuple) p).elements;
+                if (argElements.size() == 0) {
+                    throw new ParserException("illegal argument format: " + p.toString(), p);
+                }
+                if (!(argElements.get(0) instanceof Name)) {
+                    throw new ParserException("illegal argument name : " + argElements.get(0), p);
+                }
+
+                Name name = (Name) argElements.get(0);
+                if (!name.id.equals(Constants.RETURN_ARROW)) {
+                    paramNames.add(name);
+                }
+                paramTuples.add(p);
+            }
+        }
+
+        if (hasName && hasTuple) {
+            throw new ParserException("parameters must be either all names or all tuples: " +
+                    preParams.toString(), preParams);
+        }
+
+        Scope properties;
+        if (hasTuple) {
+            properties = parseProperties(paramTuples);
+        } else {
+            properties = null;
+        }
+
+        // construct body
+        List<Node> statements = parseList(elements.subList(2, elements.size()));
+        int start = statements.get(0).start;
+        int end = statements.get(statements.size() - 1).end;
+        Node body = new Block(statements, tuple.file, start, end, tuple.line, tuple.col);
+
+        return new Fun(paramNames, properties, body,
+                tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
     }
 
 
