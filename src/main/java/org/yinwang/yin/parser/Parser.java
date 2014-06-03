@@ -27,51 +27,52 @@ public class Parser {
 
     public static Node parseNode(Node prenode) throws ParserException {
 
-        // Case 1: node is not of form (..) or [..], return the node itself
         if (!(prenode instanceof Tuple)) {
+            // Case 1: node is not of form (..) or [..], return the node itself
             return prenode;
-        }
-
-        // Case 2: node is of form (..) or [..]
-        Tuple tuple = ((Tuple) prenode);
-        List<Node> elements = tuple.elements;
-
-        // Case 2.1: node is of form [..]
-        if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
-            return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
-        }
-
-        // Case 2.2: node is (). This is not allowed
-        if (elements.isEmpty()) {
-            throw new ParserException("syntax error", tuple);
-        }
-
-        // Case 2.3: node is of form (keyword ..)
-        Node keyNode = elements.get(0);
-
-        if (keyNode instanceof Name) {
-            switch (((Name) keyNode).id) {
-                case Constants.SEQ_KEYWORD:
-                    return parseBlock(tuple);
-                case Constants.IF_KEYWORD:
-                    return parseIf(tuple);
-                case Constants.DEF_KEYWORD:
-                    return parseDef(tuple);
-                case Constants.ASSIGN_KEYWORD:
-                    return parseAssign(tuple);
-                case Constants.DECLARE_KEYWORD:
-                    return parseDeclare(tuple);
-                case Constants.FUN_KEYWORD:
-                    return parseFun(tuple);
-                case Constants.RECORD_KEYWORD:
-                    return parseRecordDef(tuple);
-                default:
-                    return parseCall(tuple);
-            }
         } else {
-            // applications whose operator is not a name
-            // e.g. ((foo 1) 2)
-            return parseCall(tuple);
+            // Case 2: node is of form (..) or [..]
+            Tuple tuple = ((Tuple) prenode);
+            List<Node> elements = tuple.elements;
+
+            if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
+                // Case 2.1: node is of form [..]
+                return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
+            } else {
+                // Case 2.2: node is (..)
+                if (elements.isEmpty()) {
+                    // Case 2.2.1: node is (). This is not allowed
+                    throw new ParserException("syntax error", tuple);
+                } else {
+                    // Case 2.2.2: node is of form (keyword ..)
+                    Node keyNode = elements.get(0);
+
+                    if (keyNode instanceof Name) {
+                        switch (((Name) keyNode).id) {
+                            case Constants.SEQ_KEYWORD:
+                                return parseBlock(tuple);
+                            case Constants.IF_KEYWORD:
+                                return parseIf(tuple);
+                            case Constants.DEF_KEYWORD:
+                                return parseDef(tuple);
+                            case Constants.ASSIGN_KEYWORD:
+                                return parseAssign(tuple);
+                            case Constants.DECLARE_KEYWORD:
+                                return parseDeclare(tuple);
+                            case Constants.FUN_KEYWORD:
+                                return parseFun(tuple);
+                            case Constants.RECORD_KEYWORD:
+                                return parseRecordDef(tuple);
+                            default:
+                                return parseCall(tuple);
+                        }
+                    } else {
+                        // applications whose operator is not a name
+                        // e.g. ((foo 1) 2)
+                        return parseCall(tuple);
+                    }
+                }
+            }
         }
     }
 
