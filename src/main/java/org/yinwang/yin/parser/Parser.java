@@ -52,58 +52,30 @@ public class Parser {
         if (keyNode instanceof Name) {
             String keyword = ((Name) keyNode).id;
 
-            // -------------------- sequence --------------------
             if (keyword.equals(Constants.SEQ_KEYWORD)) {
-                List<Node> statements = parseList(elements.subList(1, elements.size()));
-                return new Block(statements, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseBlock(tuple);
             }
 
-            // -------------------- if --------------------
             if (keyword.equals(Constants.IF_KEYWORD)) {
-                if (elements.size() != 4) {
-                    throw new ParserException("incorrect format of if", tuple);
-                }
-                Node test = parseNode(elements.get(1));
-                Node conseq = parseNode(elements.get(2));
-                Node alter = parseNode(elements.get(3));
-                return new If(test, conseq, alter, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseIf(tuple);
             }
 
-            // -------------------- definition --------------------
             if (keyword.equals(Constants.DEF_KEYWORD)) {
-                if (elements.size() != 3) {
-                    throw new ParserException("incorrect format of definition", tuple);
-                }
-                Node pattern = parseNode(elements.get(1));
-                Node value = parseNode(elements.get(2));
-                return new Def(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseDef(tuple);
             }
 
-            // -------------------- assignment --------------------
             if (keyword.equals(Constants.ASSIGN_KEYWORD)) {
-                if (elements.size() != 3) {
-                    throw new ParserException("incorrect format of definition", tuple);
-                }
-                Node pattern = parseNode(elements.get(1));
-                Node value = parseNode(elements.get(2));
-                return new Assign(pattern, value, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseAssign(tuple);
             }
 
-            // -------------------- declare --------------------
             if (keyword.equals(Constants.DECLARE_KEYWORD)) {
-                if (elements.size() < 2) {
-                    throw new ParserException("syntax error in record type definition", tuple);
-                }
-                Scope properties = parseProperties(elements.subList(1, elements.size()));
-                return new Declare(properties, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
+                return parseDeclare(tuple);
             }
 
-            // -------------------- anonymous function --------------------
             if (keyword.equals(Constants.FUN_KEYWORD)) {
                 return parseFun(tuple);
             }
 
-            // -------------------- record type definition --------------------
             if (keyword.equals(Constants.RECORD_KEYWORD)) {
                 return parseRecordDef(tuple);
             }
@@ -112,6 +84,58 @@ public class Parser {
         // -------------------- application --------------------
         // must go after others because it has no keywords
         return parseCall(tuple);
+    }
+
+
+    public static Block parseBlock(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+        List<Node> statements = parseList(elements.subList(1, elements.size()));
+        return new Block(statements, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
+    }
+
+
+    public static If parseIf(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+        if (elements.size() != 4) {
+            throw new ParserException("incorrect format of if", tuple);
+        }
+        Node test = parseNode(elements.get(1));
+        Node conseq = parseNode(elements.get(2));
+        Node alter = parseNode(elements.get(3));
+        return new If(test, conseq, alter, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
+    }
+
+
+    public static Def parseDef(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+        if (elements.size() != 3) {
+            throw new ParserException("incorrect format of definition", tuple);
+        }
+        Node pattern = parseNode(elements.get(1));
+        Node value = parseNode(elements.get(2));
+        return new Def(pattern, value, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
+
+    }
+
+
+    public static Assign parseAssign(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+        if (elements.size() != 3) {
+            throw new ParserException("incorrect format of definition", tuple);
+        }
+        Node pattern = parseNode(elements.get(1));
+        Node value = parseNode(elements.get(2));
+        return new Assign(pattern, value, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
+    }
+
+
+    public static Declare parseDeclare(Tuple tuple) throws ParserException {
+        List<Node> elements = tuple.elements;
+        if (elements.size() < 2) {
+            throw new ParserException("syntax error in record type definition", tuple);
+        }
+        Scope properties = parseProperties(elements.subList(1, elements.size()));
+        return new Declare(properties, tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
     }
 
 
