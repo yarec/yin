@@ -37,7 +37,6 @@ public class Lexer {
         }
 
         Delimeter.addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
-        Delimeter.addDelimiterPair(Constants.CURLY_BEGIN, Constants.CURLY_END);
         Delimeter.addDelimiterPair(Constants.SQUARE_BEGIN, Constants.ARRAY_END);
 
         Delimeter.addDelimiter(Constants.ATTRIBUTE_ACCESS);
