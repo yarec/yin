@@ -27,30 +27,26 @@ public class Parser {
 
     public static Node parseNode(Node prenode) throws ParserException {
 
-        // initial program is in a block
-        if (prenode instanceof Block) {
-            List<Node> parsed = parseList(((Block) prenode).statements);
-            return new Block(parsed, prenode.file, prenode.start, prenode.end, prenode.line, prenode.col);
-        }
-
+        // Case 1: node is not of form (..) or [..], return the node itself
         if (!(prenode instanceof Tuple)) {
-            // default return the node untouched
             return prenode;
         }
 
-        // following: actually do something
+        // Case 2: node is of form (..) or [..]
         Tuple tuple = ((Tuple) prenode);
         List<Node> elements = tuple.elements;
 
+        // Case 2.1: node is of form [..]
         if (delimType(tuple.open, Constants.SQUARE_BEGIN)) {
             return new VectorLiteral(parseList(elements), tuple.file, tuple.start, tuple.end, tuple.line, tuple.col);
         }
 
-        // (...) form must be non-empty
+        // Case 2.2: node is (). This is not allowed
         if (elements.isEmpty()) {
             throw new ParserException("syntax error", tuple);
         }
 
+        // Case 2.3: node is of form (keyword ..)
         Node keyNode = elements.get(0);
 
         if (keyNode instanceof Name) {
