@@ -50,40 +50,29 @@ public class Parser {
         Node keyNode = elements.get(0);
 
         if (keyNode instanceof Name) {
-            String keyword = ((Name) keyNode).id;
-
-            if (keyword.equals(Constants.SEQ_KEYWORD)) {
-                return parseBlock(tuple);
+            switch (((Name) keyNode).id) {
+                case Constants.SEQ_KEYWORD:
+                    return parseBlock(tuple);
+                case Constants.IF_KEYWORD:
+                    return parseIf(tuple);
+                case Constants.DEF_KEYWORD:
+                    return parseDef(tuple);
+                case Constants.ASSIGN_KEYWORD:
+                    return parseAssign(tuple);
+                case Constants.DECLARE_KEYWORD:
+                    return parseDeclare(tuple);
+                case Constants.FUN_KEYWORD:
+                    return parseFun(tuple);
+                case Constants.RECORD_KEYWORD:
+                    return parseRecordDef(tuple);
+                default:
+                    return parseCall(tuple);
             }
-
-            if (keyword.equals(Constants.IF_KEYWORD)) {
-                return parseIf(tuple);
-            }
-
-            if (keyword.equals(Constants.DEF_KEYWORD)) {
-                return parseDef(tuple);
-            }
-
-            if (keyword.equals(Constants.ASSIGN_KEYWORD)) {
-                return parseAssign(tuple);
-            }
-
-            if (keyword.equals(Constants.DECLARE_KEYWORD)) {
-                return parseDeclare(tuple);
-            }
-
-            if (keyword.equals(Constants.FUN_KEYWORD)) {
-                return parseFun(tuple);
-            }
-
-            if (keyword.equals(Constants.RECORD_KEYWORD)) {
-                return parseRecordDef(tuple);
-            }
+        } else {
+            // applications whose operator is not a name
+            // e.g. ((foo 1) 2)
+            return parseCall(tuple);
         }
-
-        // -------------------- application --------------------
-        // must go after others because it has no keywords
-        return parseCall(tuple);
     }
 
 
