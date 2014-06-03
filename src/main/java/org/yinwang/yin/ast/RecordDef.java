@@ -80,17 +80,19 @@ public class RecordDef extends Node {
         StringBuilder sb = new StringBuilder();
         sb.append(Constants.PAREN_BEGIN);
         sb.append(Constants.RECORD_KEYWORD).append(" ");
-        sb.append(name);
+        sb.append(name).append(" ");
 
         if (parents != null) {
             sb.append(" (" + Node.printList(parents) + ")");
         }
 
         for (String field : propertyForm.keySet()) {
+            sb.append("[" + field);
             Map<String, Object> props = propertyForm.lookupAllProps(field);
             for (Map.Entry<String, Object> e : props.entrySet()) {
                 sb.append(" :" + e.getKey() + " " + e.getValue());
             }
+            sb.append("]");
         }
 
         sb.append(Constants.PAREN_END);

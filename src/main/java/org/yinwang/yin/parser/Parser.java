@@ -279,7 +279,7 @@ public class Parser {
             {
                 List<Node> elements = parseList(((Tuple) field).elements);
                 if (elements.size() < 2) {
-                    throw new ParserException("empty slot not allowed", field);
+                    throw new ParserException("incorrect form of descriptor: " + field.toString(), field);
                 }
 
                 Node nameNode = elements.get(0);
@@ -301,7 +301,7 @@ public class Parser {
                 }
                 properties.putProperties(((Name) nameNode).id, propsObj);
             } else {
-                throw new ParserException("illegal form of descriptor: " + field.toString(), field);
+                throw new ParserException("incorrect form of descriptor: " + field.toString(), field);
             }
         }
         return properties;
