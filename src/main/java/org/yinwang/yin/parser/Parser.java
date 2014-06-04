@@ -291,6 +291,9 @@ public class Parser {
                 }
 
                 Node typeNode = elements.get(1);
+                if (!(typeNode instanceof Name)) {
+                    throw new ParserException("type must be a name, but got: " + typeNode.toString(), typeNode);
+                }
                 properties.put(id, "type", typeNode);
 
                 Map<String, Node> props = parseMap(elements.subList(2, elements.size()));
