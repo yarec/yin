@@ -69,7 +69,7 @@ public class RecordLiteral extends Node {
             sb.append(":" + e.getKey() + " " + e.getValue());
             first = false;
         }
-        sb.append(Constants.SQUARE_BEGIN);
+        sb.append(Constants.SQUARE_END);
         return sb.toString();
     }
 }
