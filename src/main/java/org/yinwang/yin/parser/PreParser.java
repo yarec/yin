@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class PreParser {
 
-    String file;
-    Lexer lexer;
+    protected String file;
+    protected Lexer lexer;
 
 
     public PreParser(String file) {
