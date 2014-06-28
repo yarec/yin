@@ -42,6 +42,18 @@ public class Lexer {
         Delimeter.addDelimiter(Constants.ATTRIBUTE_ACCESS);
     }
 
+    public Lexer(StringBuffer buffer) {
+        this.file = null;
+        this.text = buffer.toString();
+        this.offset = 0;
+        this.line = 0;
+        this.col = 0;
+
+        Delimeter.addDelimiterPair(Constants.PAREN_BEGIN, Constants.PAREN_END);
+        Delimeter.addDelimiterPair(Constants.SQUARE_BEGIN, Constants.SQUARE_END);
+
+        Delimeter.addDelimiter(Constants.ATTRIBUTE_ACCESS);
+    }
 
     public void forward() {
         if (text.charAt(offset) == '\n') {
