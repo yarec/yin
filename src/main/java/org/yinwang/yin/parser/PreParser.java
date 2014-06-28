@@ -27,6 +27,10 @@ public class PreParser {
         this.lexer = new Lexer(file);
     }
 
+    public PreParser(StringBuffer buffer) {
+        this.file = null;
+        this.lexer = new Lexer(buffer);
+    }
 
     /**
      * Get next node from token stream
