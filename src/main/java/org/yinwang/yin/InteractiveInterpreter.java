@@ -39,10 +39,12 @@ public class InteractiveInterpreter {
             }
             switch (state) {
                 case 0:
-                    System.out.print(">>> ");
+                    System.out.print("(seq ");
+                    buffer.setLength(0);
+                    buffer.append("(seq ");
                     break;
                 case 1:
-                    System.out.print("... ");
+                    System.out.print(".... ");
                     break;
 
             }
@@ -67,7 +69,6 @@ public class InteractiveInterpreter {
                             result = e.getMessage();
                         } finally {
                             System.out.println(result);
-                            buffer.setLength(0);
                             state = 0;
                         }
 
@@ -77,7 +78,6 @@ public class InteractiveInterpreter {
                         } else {
                             System.out.println(pe.getMessage());
                             state = 0;
-                            buffer.setLength(0);
                         }
                     }
                     break;
